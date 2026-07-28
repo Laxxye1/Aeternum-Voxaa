@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aeternum Voxaa - Admin</title>
+    <style>
+        :root { --biru: #0F52BA; --bg: #f0f4f8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); font-family: sans-serif; padding: 40px 20px; text-align: center; }
+        h2 { color: var(--biru); margin-bottom: 20px; }
+        input { width: 100%; max-width: 400px; padding: 14px; border: 2px solid #ddd; border-radius: 12px; font-size: 14px; margin-bottom: 12px; }
+        button { padding: 14px 30px; background: var(--biru); color: #fff; border: none; border-radius: 12px; font: bold 16px sans-serif; cursor: pointer; }
+        .msg { margin-top: 12px; font: bold 13px sans-serif; }
+        .msg.success { color: #2e7d32; }
+        .back { color: var(--biru); text-decoration: none; font-size: 14px; display: block; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <a href="/" class="back">← Kembali</a>
+    <h2>Pengaturan Server</h2>
+    <input type="text" id="domainInput" placeholder="Masukkan domain (contoh: panelkamu.my.id)">
+    <input type="text" id="portInput" placeholder="Masukkan port (contoh: 25594)">
+    <button onclick="saveConfig()">Simpan</button>
+    <div class="msg" id="msg"></div>
+
+    <script>
+        const current = localStorage.getItem('aeternum_api_base') || 'https://resellerpanelniellxynn-privat.rexypediaa.my.id:25594';
+        const url = new URL(current);
+        document.getElementById('domainInput').value = url.hostname;
+        document.getElementById('portInput').value = url.port || '25594';
+
+        function saveConfig() {
+            const domain = document.getElementById('domainInput').value.trim().replace(/\/+$/, '');
+            const port = document.getElementById('portInput').value.trim();
+            const base = 'https://' + domain + ':' + port;
+            localStorage.setItem('aeternum_api_base', base);
+            document.getElementById('msg').className = 'msg success';
+            document.getElementById('msg').textContent = 'Tersimpan! ' + base;
+        }
+    </script>
+</body>
+</html>
