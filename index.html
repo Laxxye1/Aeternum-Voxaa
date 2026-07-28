@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aeternum Voxaa - Massage</title>
+    <style>
+        :root { --biru: #0F52BA; --bg: #f0f4f8; --putih: #fff; --abu: #999; --merah: #ff5252; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+        
+        .header { background: var(--biru); color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .header .user-info { font: bold 11px monospace; color: rgba(255,255,255,0.95); line-height: 1.5; }
+        .header .header-icons { display: flex; gap: 18px; align-items: center; }
+        .header .header-icons .icon-btn { width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: 0.2s; }
+        .header .header-icons .icon-btn:active { background: rgba(255,255,255,0.2); }
+        .header .header-icons .icon-btn svg { width: 22px; height: 22px; fill: #fff; }
+        
+        .search-bar { padding: 10px 16px; background: #fff; border-bottom: 1px solid #eee; display: none; gap: 8px; align-items: center; flex-shrink: 0; animation: slideDown 0.2s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .search-bar input { flex: 1; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; outline: none; transition: 0.2s; }
+        .search-bar input:focus { border-color: var(--biru); }
+        .search-bar input::placeholder { color: #bbb; }
+        .search-bar button { padding: 12px 16px; background: var(--biru); color: #fff; border: none; border-radius: 10px; font: bold 13px sans-serif; cursor: pointer; white-space: nowrap; }
+        .search-result { padding: 10px 16px; font: bold 12px sans-serif; display: none; flex-shrink: 0; }
+        .search-result.found { background: #e8f5e9; color: #2e7d32; display: block; }
+        .search-result.notfound { background: #ffebee; color: #c62828; display: block; }
+        
+        .chat-container { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 8px; -webkit-overflow-scrolling: touch; }
+        .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 16px; font: 14px sans-serif; word-wrap: break-word; line-height: 1.4; }
+        .chat-bubble.me { align-self: flex-end; background: var(--biru); color: #fff; border-bottom-right-radius: 4px; }
+        .chat-bubble.other { align-self: flex-start; background: #e8e8e8; color: #333; border-bottom-left-radius: 4px; }
+        .chat-bubble .sender { font: bold 10px sans-serif; margin-bottom: 4px; opacity: 0.7; }
+        .chat-bubble .time { font: 9px sans-serif; margin-top: 6px; opacity: 0.6; text-align: right; }
+        
+        .chat-input { padding: 10px 16px; padding-bottom: max(10px, env(safe-area-inset-bottom)); background: #fff; display: flex; gap: 8px; align-items: center; border-top: 1px solid #eee; flex-shrink: 0; }
+        .chat-input input { flex: 1; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 24px; font-size: 14px; outline: none; }
+        .chat-input input:focus { border-color: var(--biru); }
+        .chat-input input::placeholder { color: #bbb; }
+        .chat-input .send-btn { width: 40px; height: 40px; background: var(--biru); color: #fff; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+        .chat-input .send-btn:active { background: #0a3d8f; }
+        .chat-input .send-btn svg { width: 18px; height: 18px; fill: #fff; }
+        
+        .empty { text-align: center; color: #bbb; padding: 40px; font: 14px sans-serif; }
+        
+        .history-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; justify-content: center; align-items: center; padding: 20px; }
+        .history-overlay.active { display: flex; }
+        .history-box { background: #fff; border-radius: 16px; padding: 20px; width: 100%; max-width: 400px; max-height: 70vh; overflow-y: auto; }
+        .history-box h3 { font: bold 16px sans-serif; color: var(--biru); margin-bottom: 16px; text-align: center; }
+        .history-item { padding: 14px 12px; border-radius: 10px; margin-bottom: 4px; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .history-item:active { background: #f0f4f8; }
+        .history-item .h-info { flex: 1; cursor: pointer; }
+        .history-item .h-name { font: bold 14px sans-serif; color: #333; }
+        .history-item .h-id { font: 12px sans-serif; color: var(--abu); margin-top: 2px; }
+        .history-item .delete-btn { width: 32px; height: 32px; border-radius: 50%; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s; }
+        .history-item .delete-btn:active { background: #ffebee; }
+        .history-item .delete-btn svg { width: 18px; height: 18px; fill: var(--merah); }
+        .history-empty { text-align: center; color: #bbb; padding: 30px; font: 13px sans-serif; }
+
+        .delete-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 4000; justify-content: center; align-items: center; padding: 20px; }
+        .delete-overlay.active { display: flex; }
+        .delete-box { background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 340px; text-align: center; animation: popIn 0.2s ease; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .delete-box .del-icon { margin-bottom: 12px; }
+        .delete-box .del-icon svg { width: 48px; height: 48px; fill: var(--merah); }
+        .delete-box .del-title { font: bold 14px sans-serif; color: #333; margin-bottom: 20px; }
+        .delete-box .del-buttons { display: flex; gap: 10px; }
+        .delete-box .del-buttons button { flex: 1; padding: 12px; border-radius: 10px; font: bold 13px sans-serif; cursor: pointer; border: none; transition: 0.2s; }
+        .delete-box .del-cancel { background: #f0f0f0; color: #666; }
+        .delete-box .del-cancel:active { background: #e0e0e0; }
+        .delete-box .del-confirm { background: var(--merah); color: #fff; }
+        .delete-box .del-confirm:active { background: #d32f2f; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="user-info">
+            Name <span id="myName">-</span><br>
+            ID <span id="myId">-</span>
+        </div>
+        <div class="header-icons">
+            <div class="icon-btn" onclick="toggleSearch()" title="Cari User">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            </div>
+            <div class="icon-btn" onclick="toggleHistory()" title="History Chat">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-bar" id="searchBar">
+        <input type="text" id="searchInput" placeholder="Masukkan ID" onkeydown="if(event.key==='Enter')searchUser()">
+        <button onclick="searchUser()">Cari</button>
+    </div>
+    <div class="search-result" id="searchResult"></div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="empty">sᴇᴀʀᴄʜ ʙʏ ɪᴅ ᴛᴏ sᴛᴀʀᴛ ᴄʜᴀᴛ</div>
+    </div>
+
+    <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Send Massage..." onkeydown="if(event.key==='Enter')sendMessage()">
+        <button class="send-btn" onclick="sendMessage()" title="Kirim">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
+
+    <div class="history-overlay" id="historyOverlay" onclick="closeHistory(event)">
+        <div class="history-box" onclick="event.stopPropagation()">
+            <h3>ʜɪsᴛᴏʀʏ ᴄʜᴀᴛ</h3>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <div class="delete-overlay" id="deleteOverlay">
+        <div class="delete-box">
+            <div class="del-icon">
+                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </div>
+            <div class="del-title">ᴅᴇʟᴇᴛᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ</div>
+            <div class="del-buttons">
+                <button class="del-cancel" onclick="closeDeletePopup()">ᴄᴀɴᴄᴇʟʟᴇᴅ</button>
+                <button class="del-confirm" id="confirmDeleteBtn">ᴅᴇʟᴇᴛᴇ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== KONFIGURASI BACKEND =====
+        let API_BASE = localStorage.getItem('aeternum_api_base') || 'https://resellerpanelniellxynn-privat.rexypediaa.my.id:25594';
+        
+        let currentUser = null;
+        let chatPartner = null;
+        let roomId = '';
+        let pendingDeleteRoomId = '';
+
+        const savedUser = localStorage.getItem('aeternum_user');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            document.getElementById('myName').textContent = currentUser.name;
+            document.getElementById('myId').textContent = currentUser.id;
+        } else {
+            window.location.href = '/';
+        }
+
+        document.addEventListener('click', function(e) {
+            const searchBar = document.getElementById('searchBar');
+            const headerIcons = document.querySelector('.header-icons');
+            if (searchBar.style.display === 'flex' && 
+                !searchBar.contains(e.target) && 
+                !headerIcons.contains(e.target)) {
+                searchBar.style.display = 'none';
+            }
+        });
+
+        function toggleSearch() {
+            const bar = document.getElementById('searchBar');
+            if (bar.style.display === 'flex') {
+                bar.style.display = 'none';
+            } else {
+                bar.style.display = 'flex';
+                document.getElementById('searchInput').focus();
+            }
+        }
+
+        function toggleHistory() {
+            document.getElementById('historyOverlay').classList.add('active');
+            loadChatHistory();
+        }
+
+        function closeHistory(e) {
+            if (e && e.target.id !== 'historyOverlay') return;
+            document.getElementById('historyOverlay').classList.remove('active');
+        }
+
+        function showDeletePopup(roomId) {
+            pendingDeleteRoomId = roomId;
+            document.getElementById('deleteOverlay').classList.add('active');
+            document.getElementById('confirmDeleteBtn').onclick = () => confirmDelete();
+        }
+
+        function closeDeletePopup() {
+            document.getElementById('deleteOverlay').classList.remove('active');
+            pendingDeleteRoomId = '';
+        }
+
+        async function confirmDelete() {
+            if (!pendingDeleteRoomId) return;
+            try {
+                await fetch(API_BASE + '/api/chat/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ roomId: pendingDeleteRoomId })
+                });
+                
+                if (roomId === pendingDeleteRoomId) {
+                    chatPartner = null;
+                    roomId = '';
+                    document.getElementById('chatContainer').innerHTML = '<div class="empty">sᴇᴀʀᴄʜ ʙʏ ɪᴅ ᴛᴏ sᴛᴀʀᴛ ᴄʜᴀᴛ</div>';
+                    document.getElementById('searchResult').style.display = 'none';
+                }
+                
+                closeDeletePopup();
+                loadChatHistory();
+            } catch(e) {}
+        }
+
+        async function loadChatHistory() {
+            try {
+                const r = await fetch(API_BASE + '/api/chat/history/' + currentUser.id);
+                const d = await r.json();
+                const chatHistory = d.history || [];
+                
+                const list = document.getElementById('historyList');
+                if (chatHistory.length === 0) {
+                    list.innerHTML = '<div class="history-empty">ɴᴏ ʜɪsᴛᴏʀʏ ᴄʜᴀᴛ</div>';
+                } else {
+                    list.innerHTML = chatHistory.map(h => {
+                        const delRoomId = [currentUser.id, h.partnerId].sort().join('_');
+                        return `
+                        <div class="history-item">
+                            <div class="h-info" onclick="openHistoryChat('${h.partnerId}', '${h.partnerName}')">
+                                <div class="h-name">${h.partnerName}</div>
+                                <div class="h-id">ID: ${h.partnerId}</div>
+                            </div>
+                            <button class="delete-btn" onclick="event.stopPropagation(); showDeletePopup('${delRoomId}')" title="Hapus Chat">
+                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>
+                        </div>
+                    `}).join('');
+                }
+            } catch(e) {}
+        }
+
+        function openHistoryChat(partnerId, partnerName) {
+            chatPartner = { id: parseInt(partnerId), name: partnerName };
+            document.getElementById('searchResult').style.display = 'none';
+            document.getElementById('historyOverlay').classList.remove('active');
+            roomId = [currentUser.id, chatPartner.id].sort().join('_');
+            loadChat();
+        }
+
+        async function searchUser() {
+            const id = document.getElementById('searchInput').value.trim();
+            if (!id) return;
+            const r = await fetch(API_BASE + '/api/user/' + id);
+            const d = await r.json();
+            const result = document.getElementById('searchResult');
+            if (d.success) {
+                chatPartner = d.user;
+                result.className = 'search-result found';
+                result.textContent = 'Name ' + d.user.name + ' | ID ' + d.user.id;
+                roomId = [currentUser.id, chatPartner.id].sort().join('_');
+                loadChat();
+            } else {
+                result.className = 'search-result notfound';
+                result.textContent = 'User tidak ditemukan';
+            }
+        }
+
+        async function loadChat() {
+            const r = await fetch(API_BASE + '/api/chat/' + roomId);
+            const d = await r.json();
+            const container = document.getElementById('chatContainer');
+            if (!d.messages || d.messages.length === 0) {
+                container.innerHTML = '<div class="empty">ɴᴇᴡ ᴄʜᴀᴛ</div>';
+                return;
+            }
+            container.innerHTML = d.messages.map(m => {
+                const isMe = m.senderId === currentUser.id;
+                return `<div class="chat-bubble ${isMe ? 'me' : 'other'}">
+                    <div class="sender">${m.senderName}</div>
+                    ${m.text}
+                    <div class="time">${m.time}</div>
+                </div>`;
+            }).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = document.getElementById('chatInput').value.trim();
+            if (!text || !chatPartner) return;
+            const now = new Date();
+            const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            await fetch(API_BASE + '/api/chat', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roomId, senderId: currentUser.id, senderName: currentUser.name, text, time })
+            });
+            document.getElementById('chatInput').value = '';
+            loadChat();
+        }
+
+        setInterval(() => { if (roomId) loadChat(); }, 3000);
+    </script>
+</body>
+  </html>
