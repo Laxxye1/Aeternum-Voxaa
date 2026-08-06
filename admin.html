@@ -31,12 +31,10 @@
 <body>
     <div class="box">
         <h1>ᴀᴅᴍɪɴ</h1>
-        <div class="sub">Atur alamat server backend (Pterodactyl)</div>
 
         <div class="field">
             <label>Alamat Server Backend</label>
             <input type="text" id="apiBaseInput" placeholder="https://domain-panel.com:port">
-            <div class="hint">Contoh: https://server-kamu.rexypediaa.my.id:25594 (tanpa garis miring di akhir)</div>
         </div>
 
         <div class="btn-row">
@@ -55,7 +53,18 @@
     </div>
 
     <script>
+        let accessGranted = true;
+        (function checkAccess() {
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem('aeternum_user') || 'null'); } catch (e) {}
+            if (!user || user.role !== 'owner') {
+                accessGranted = false;
+                document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;font-family:sans-serif;color:#c0392b;font-weight:bold">ᴀᴋsᴇs ᴅɪᴛᴏʟᴀᴋ</div>';
+                setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+            }
+        })();
         function loadCurrent() {
+            if (!accessGranted) return;
             const saved = localStorage.getItem('aeternum_api_base');
             const box = document.getElementById('currentBox');
             const val = document.getElementById('currentValue');
@@ -75,6 +84,7 @@
             return url.replace(/\/+$/, '');
         }
         async function testConnection() {
+            if (!accessGranted) return;
             const url = normalizeUrl(document.getElementById('apiBaseInput').value);
             const status = document.getElementById('statusBox');
             if (!url) { status.className = 'status fail'; status.textContent = 'ɪsɪ ᴀʟᴀᴍᴀᴛ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ'; return; }
@@ -91,6 +101,7 @@
             }
         }
         function saveApiBase() {
+            if (!accessGranted) return;
             const url = normalizeUrl(document.getElementById('apiBaseInput').value);
             const status = document.getElementById('statusBox');
             if (!url) { status.className = 'status fail'; status.textContent = 'ɪsɪ ᴀʟᴀᴍᴀᴛ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ'; return; }
