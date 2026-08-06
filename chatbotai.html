@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aeternum Voxaa - AI</title>
+    <style>
+        :root { --biru: #0F52BA; --bg: #f0f4f8; --abu: #999; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; }
+        body { background: var(--bg); font-family: sans-serif; display: flex; flex-direction: column; }
+        .topbar { background: var(--biru); padding: 18px 16px; color: #fff; }
+        .topbar h1 { font: bold 18px monospace; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .topbar h1 svg { width: 22px; height: 22px; fill: #fff; }
+        .navlinks { display: flex; gap: 8px; }
+        .navlinks a { flex: 1; text-align: center; padding: 8px; border-radius: 10px; background: rgba(255,255,255,0.15); color: #fff; text-decoration: none; font: bold 12px sans-serif; }
+        .navlinks a.active { background: #fff; color: var(--biru); }
+
+        .chat-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .msg { max-width: 82%; padding: 12px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+        .msg.user { align-self: flex-end; background: var(--biru); color: #fff; border-bottom-right-radius: 4px; }
+        .msg.ai { align-self: flex-start; background: #fff; color: #222; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .msg.ai.error { background: #fdeaea; color: #c0392b; }
+        .msg img.attach { max-width: 100%; border-radius: 10px; margin-top: 8px; display: block; }
+        .typing { align-self: flex-start; padding: 12px 16px; background: #fff; border-radius: 16px; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .typing span { display: inline-block; width: 6px; height: 6px; margin: 0 2px; background: var(--abu); border-radius: 50%; animation: blink 1.2s infinite; }
+        .typing span:nth-child(2) { animation-delay: .2s; }
+        .typing span:nth-child(3) { animation-delay: .4s; }
+        @keyframes blink { 0%, 80%, 100% { opacity: .3; } 40% { opacity: 1; } }
+        .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--abu); text-align: center; padding: 20px; gap: 10px; }
+        .empty-state svg { width: 48px; height: 48px; fill: var(--abu); }
+
+        .input-bar { background: #fff; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid #eee; }
+        .input-bar textarea { flex: 1; resize: none; border: 1px solid #ddd; border-radius: 14px; padding: 10px 14px; font-size: 14px; font-family: sans-serif; max-height: 100px; }
+        .icon-btn { width: 42px; height: 42px; border-radius: 50%; border: none; background: #f0f4f8; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .icon-btn svg { width: 20px; height: 20px; fill: var(--biru); }
+        .send-btn { width: 42px; height: 42px; border-radius: 50%; border: none; background: var(--biru); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .send-btn svg { width: 20px; height: 20px; fill: #fff; }
+        .preview-bar { padding: 8px 12px 0; display: flex; gap: 8px; background: #fff; }
+        .preview-bar img { width: 56px; height: 56px; object-fit: cover; border-radius: 10px; }
+        .preview-bar .remove { width: 20px; height: 20px; background: #c0392b; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; margin-left: -12px; margin-top: -6px; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <h1><svg viewBox="0 0 24 24"><path d="M12 2l1.4 4.6L18 8l-4.6 1.4L12 14l-1.4-4.6L6 8l4.6-1.4L12 2zM5 14l.9 2.9L9 18l-3.1 1.1L5 22l-.9-2.9L1 18l3.1-1.1L5 14zm14 0l.9 2.9L23 18l-3.1 1.1L19 22l-.9-2.9L15 18l3.1-1.1L19 14z"/></svg> ᴀɪ ᴄʜᴀᴛ</h1>
+        <div class="navlinks">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/massage">Massage</a>
+            <a href="/anime">Anime</a>
+            <a href="/chatbotai" class="active">AI</a>
+        </div>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+        <div class="empty-state" id="emptyState">
+            <svg viewBox="0 0 24 24"><path d="M12 2l1.4 4.6L18 8l-4.6 1.4L12 14l-1.4-4.6L6 8l4.6-1.4L12 2zM5 14l.9 2.9L9 18l-3.1 1.1L5 22l-.9-2.9L1 18l3.1-1.1L5 14zm14 0l.9 2.9L23 18l-3.1 1.1L19 22l-.9-2.9L15 18l3.1-1.1L19 14z"/></svg>
+            <div>ᴍᴜʟᴀɪ ᴏʙʀᴏʟᴀɴ ᴅᴇɴɢᴀɴ ᴀɪ</div>
+        </div>
+    </div>
+
+    <div class="preview-bar" id="previewBar" style="display:none"></div>
+
+    <div class="input-bar">
+        <button class="icon-btn" onclick="document.getElementById('imgInput').click()">
+            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        </button>
+        <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
+        <textarea id="msgInput" rows="1" placeholder="ᴋᴇᴛɪᴋ ᴘᴇsᴀɴ..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+        <button class="send-btn" onclick="sendMessage()">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
+
+    <script>
+        let API_BASE = localStorage.getItem('aeternum_api_base') || '';
+        let history = [];
+        let pendingImage = null;
+
+        function handleImageSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                pendingImage = reader.result;
+                const bar = document.getElementById('previewBar');
+                bar.style.display = 'flex';
+                bar.innerHTML = `<img src="${pendingImage}"><div class="remove" onclick="clearImage()">×</div>`;
+            };
+            reader.readAsDataURL(file);
+        }
+        function clearImage() {
+            pendingImage = null;
+            document.getElementById('previewBar').style.display = 'none';
+            document.getElementById('imgInput').value = '';
+        }
+        function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+        function appendMessage(role, text, imageUrl) {
+            document.getElementById('emptyState').style.display = 'none';
+            const area = document.getElementById('chatArea');
+            const div = document.createElement('div');
+            div.className = 'msg ' + role;
+            div.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
+            if (imageUrl) {
+                const img = document.createElement('img');
+                img.src = imageUrl; img.className = 'attach';
+                div.appendChild(img);
+            }
+            area.appendChild(div);
+            area.scrollTop = area.scrollHeight;
+            return div;
+        }
+        function showTyping() {
+            const area = document.getElementById('chatArea');
+            const div = document.createElement('div');
+            div.className = 'typing'; div.id = 'typingIndicator';
+            div.innerHTML = '<span></span><span></span><span></span>';
+            area.appendChild(div);
+            area.scrollTop = area.scrollHeight;
+        }
+        function hideTyping() {
+            const el = document.getElementById('typingIndicator');
+            if (el) el.remove();
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('msgInput');
+            const message = input.value.trim();
+            if (!message && !pendingImage) return;
+
+            appendMessage('user', message || '(gambar)', pendingImage);
+            const imageToSend = pendingImage;
+            input.value = '';
+            clearImage();
+            showTyping();
+
+            try {
+                const r = await fetch(API_BASE + '/api/ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, image: imageToSend, history })
+                });
+                const d = await r.json();
+                hideTyping();
+                if (d.error) {
+                    appendMessage('ai error', d.error);
+                } else {
+                    appendMessage('ai', d.reply);
+                    history.push({ role: 'user', content: message || '(gambar)' });
+                    history.push({ role: 'assistant', content: d.reply });
+                    if (history.length > 20) history = history.slice(-20);
+                }
+            } catch (e) {
+                hideTyping();
+                appendMessage('ai error', 'ɢᴀɢᴀʟ ᴛᴇʀʜᴜʙᴜɴɢ ᴋᴇ sᴇʀᴠᴇʀ');
+            }
+        }
+
+        document.getElementById('msgInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+    </script>
+</body>
+</html>
