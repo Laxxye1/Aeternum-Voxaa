@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aeternum Voxaa - Admin</title>
+    <style>
+        :root { --biru: #0F52BA; --bg: #f0f4f8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); font-family: sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .box { background: #fff; border-radius: 20px; max-width: 420px; width: 100%; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .box h1 { font: bold 18px monospace; color: var(--biru); margin-bottom: 4px; }
+        .box .sub { font-size: 12px; color: #999; margin-bottom: 24px; }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font: bold 11px sans-serif; color: #666; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+        .field input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #ddd; font-size: 14px; }
+        .field .hint { font-size: 11px; color: #aaa; margin-top: 6px; }
+        .btn-row { display: flex; gap: 8px; margin-top: 20px; }
+        .btn { flex: 1; padding: 13px; border: none; border-radius: 12px; font: bold 13px sans-serif; cursor: pointer; }
+        .btn-primary { background: var(--biru); color: #fff; }
+        .btn-secondary { background: #f0f0f0; color: #555; }
+        .status { margin-top: 16px; padding: 12px; border-radius: 10px; font-size: 12px; text-align: center; display: none; }
+        .status.ok { display: block; background: #e6f7ee; color: #1a7a4c; }
+        .status.fail { display: block; background: #fdeaea; color: #c0392b; }
+        .status.loading { display: block; background: #eef2f7; color: #666; }
+        .current { margin-top: 20px; padding: 14px; background: #f9fafb; border-radius: 12px; font-size: 12px; color: #555; word-break: break-all; }
+        .current b { color: var(--biru); display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+        .back-link { display: block; text-align: center; margin-top: 18px; font-size: 12px; color: var(--biru); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>ᴀᴅᴍɪɴ</h1>
+        <div class="sub">Atur alamat server backend (Pterodactyl)</div>
+
+        <div class="field">
+            <label>Alamat Server Backend</label>
+            <input type="text" id="apiBaseInput" placeholder="https://domain-panel.com:port">
+            <div class="hint">Contoh: https://server-kamu.rexypediaa.my.id:25594 (tanpa garis miring di akhir)</div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-secondary" onclick="testConnection()">Test Koneksi</button>
+            <button class="btn btn-primary" onclick="saveApiBase()">Simpan</button>
+        </div>
+
+        <div class="status" id="statusBox"></div>
+
+        <div class="current" id="currentBox" style="display:none">
+            <b>Alamat Aktif Sekarang</b>
+            <span id="currentValue"></span>
+        </div>
+
+        <a class="back-link" href="/dashboard">Kembali ke Dashboard</a>
+    </div>
+
+    <script>
+        function loadCurrent() {
+            const saved = localStorage.getItem('aeternum_api_base');
+            const box = document.getElementById('currentBox');
+            const val = document.getElementById('currentValue');
+            if (saved) {
+                box.style.display = 'block';
+                val.textContent = saved;
+                document.getElementById('apiBaseInput').value = saved;
+            } else {
+                box.style.display = 'block';
+                val.textContent = '(belum diatur - menggunakan domain saat ini)';
+            }
+        }
+        function normalizeUrl(url) {
+            url = url.trim();
+            if (!url) return '';
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            return url.replace(/\/+$/, '');
+        }
+        async function testConnection() {
+            const url = normalizeUrl(document.getElementById('apiBaseInput').value);
+            const status = document.getElementById('statusBox');
+            if (!url) { status.className = 'status fail'; status.textContent = 'ɪsɪ ᴀʟᴀᴍᴀᴛ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ'; return; }
+            status.className = 'status loading'; status.textContent = 'ᴍᴇɴɢᴇᴄᴇᴋ ᴋᴏɴᴇᴋsɪ...';
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 6000);
+                const r = await fetch(url + '/api/status', { signal: controller.signal });
+                clearTimeout(timeout);
+                if (r.ok) { status.className = 'status ok'; status.textContent = 'ʙᴇʀʜᴀsɪʟ ᴛᴇʀʜᴜʙᴜɴɢ ᴋᴇ sᴇʀᴠᴇʀ'; }
+                else { status.className = 'status fail'; status.textContent = 'sᴇʀᴠᴇʀ ᴍᴇʀᴇsᴘᴏɴ ᴛᴀᴘɪ ᴇʀʀᴏʀ (' + r.status + ')'; }
+            } catch (e) {
+                status.className = 'status fail'; status.textContent = 'ɢᴀɢᴀʟ ᴛᴇʀʜᴜʙᴜɴɢ, ᴄᴇᴋ ᴀʟᴀᴍᴀᴛ ᴀᴛᴀᴜ sᴇʀᴠᴇʀ';
+            }
+        }
+        function saveApiBase() {
+            const url = normalizeUrl(document.getElementById('apiBaseInput').value);
+            const status = document.getElementById('statusBox');
+            if (!url) { status.className = 'status fail'; status.textContent = 'ɪsɪ ᴀʟᴀᴍᴀᴛ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ'; return; }
+            localStorage.setItem('aeternum_api_base', url);
+            status.className = 'status ok'; status.textContent = 'ᴛᴇʀsɪᴍᴘᴀɴ, ʜᴀʟᴀᴍᴀɴ ʟᴀɪɴ ᴀᴋᴀɴ ᴍᴇɴɢɢᴜɴᴀᴋᴀɴ ᴀʟᴀᴍᴀᴛ ɪɴɪ';
+            loadCurrent();
+        }
+        loadCurrent();
+    </script>
+</body>
+</html>
