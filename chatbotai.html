@@ -9,12 +9,10 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { height: 100%; }
         body { background: var(--bg); font-family: sans-serif; display: flex; flex-direction: column; }
-        .topbar { background: var(--biru); padding: 18px 16px; color: #fff; }
-        .topbar h1 { font: bold 18px monospace; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .topbar h1 svg { width: 22px; height: 22px; fill: #fff; }
-        .navlinks { display: flex; gap: 8px; }
-        .navlinks a { flex: 1; text-align: center; padding: 8px; border-radius: 10px; background: rgba(255,255,255,0.15); color: #fff; text-decoration: none; font: bold 12px sans-serif; }
-        .navlinks a.active { background: #fff; color: var(--biru); }
+        .topbar { background: var(--biru); padding: 16px; color: #fff; display: flex; align-items: center; gap: 12px; }
+        .home-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.15); border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .home-btn svg { width: 20px; height: 20px; fill: #fff; }
+        .topbar h1 { font: bold 16px monospace; flex: 1; text-align: center; margin-right: 38px; }
 
         .chat-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
         .msg { max-width: 82%; padding: 12px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
@@ -22,6 +20,12 @@
         .msg.ai { align-self: flex-start; background: #fff; color: #222; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
         .msg.ai.error { background: #fdeaea; color: #c0392b; }
         .msg img.attach { max-width: 100%; border-radius: 10px; margin-top: 8px; display: block; }
+        .msg-actions { display: flex; gap: 6px; margin-top: 6px; align-self: flex-start; }
+        .msg-actions button { border: none; background: transparent; color: var(--abu); font-size: 11px; display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
+        .msg-actions button:active { background: rgba(0,0,0,0.05); }
+        .msg-actions svg { width: 13px; height: 13px; fill: var(--abu); }
+        .msg-wrap { display: flex; flex-direction: column; max-width: 82%; align-self: flex-start; }
+        .msg-wrap .msg { max-width: 100%; align-self: flex-start; }
         .typing { align-self: flex-start; padding: 12px 16px; background: #fff; border-radius: 16px; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
         .typing span { display: inline-block; width: 6px; height: 6px; margin: 0 2px; background: var(--abu); border-radius: 50%; animation: blink 1.2s infinite; }
         .typing span:nth-child(2) { animation-delay: .2s; }
@@ -30,8 +34,8 @@
         .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--abu); text-align: center; padding: 20px; gap: 10px; }
         .empty-state svg { width: 48px; height: 48px; fill: var(--abu); }
 
-        .input-bar { background: #fff; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid #eee; }
-        .input-bar textarea { flex: 1; resize: none; border: 1px solid #ddd; border-radius: 14px; padding: 10px 14px; font-size: 14px; font-family: sans-serif; max-height: 100px; }
+        .input-bar { background: #fff; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid #eee; position: sticky; bottom: 0; z-index: 10; }
+        .input-bar textarea { flex: 1; resize: none; border: 1px solid #ddd; border-radius: 14px; padding: 10px 14px; font-size: 14px; font-family: sans-serif; max-height: 100px; min-height: 42px; line-height: 1.4; }
         .icon-btn { width: 42px; height: 42px; border-radius: 50%; border: none; background: #f0f4f8; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
         .icon-btn svg { width: 20px; height: 20px; fill: var(--biru); }
         .send-btn { width: 42px; height: 42px; border-radius: 50%; border: none; background: var(--biru); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
@@ -43,18 +47,14 @@
 </head>
 <body>
     <div class="topbar">
-        <h1>ᴀɪ ᴄʜᴀᴛ</h1>
-        <div class="navlinks">
-            <a href="/dashboard">Dashboard</a>
-            <a href="/massage">Massage</a>
-            <a href="/anime">Anime</a>
-            <a href="/chatbotai" class="active">AI</a>
-        </div>
+        <button class="home-btn" onclick="window.location.href='/dashboard'">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        </button>
+        <h1>ᴀᴇᴛᴇʀɴᴜᴍ ᴀɪ</h1>
     </div>
 
     <div class="chat-area" id="chatArea">
         <div class="empty-state" id="emptyState">
-            <svg viewBox="0 0 24 24"><path d="M12 2l1.4 4.6L18 8l-4.6 1.4L12 14l-1.4-4.6L6 8l4.6-1.4L12 2zM5 14l.9 2.9L9 18l-3.1 1.1L5 22l-.9-2.9L1 18l3.1-1.1L5 14zm14 0l.9 2.9L23 18l-3.1 1.1L19 22l-.9-2.9L15 18l3.1-1.1L19 14z"/></svg>
             <div>ᴍᴜʟᴀɪ ᴏʙʀᴏʟᴀɴ ᴅᴇɴɢᴀɴ ᴀɪ</div>
         </div>
     </div>
@@ -64,6 +64,9 @@
     <div class="input-bar">
         <button class="icon-btn" onclick="document.getElementById('imgInput').click()">
             <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="promptImageUrl()">
+            <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
         </button>
         <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)">
         <textarea id="msgInput" rows="1" placeholder="ᴋᴇᴛɪᴋ ᴘᴇsᴀɴ..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
@@ -89,6 +92,16 @@
             };
             reader.readAsDataURL(file);
         }
+        function promptImageUrl() {
+            const url = prompt('ᴛᴇᴍᴘᴇʟ ʟɪɴᴋ ɢᴀᴍʙᴀʀ ᴀᴛᴀᴜ ᴅᴏᴍᴀɪɴ:');
+            if (!url) return;
+            const trimmed = url.trim();
+            if (!trimmed) return;
+            pendingImage = /^https?:\/\//i.test(trimmed) ? trimmed : 'https://' + trimmed;
+            const bar = document.getElementById('previewBar');
+            bar.style.display = 'flex';
+            bar.innerHTML = `<img src="${pendingImage}" onerror="this.style.display='none'"><div class="remove" onclick="clearImage()">×</div>`;
+        }
         function clearImage() {
             pendingImage = null;
             document.getElementById('previewBar').style.display = 'none';
@@ -96,27 +109,66 @@
         }
         function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
 
+        let lastUserPayload = null;
+
+        function copyText(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btn.innerHTML;
+                btn.innerHTML = 'ᴅɪsᴀʟɪɴ';
+                setTimeout(() => { btn.innerHTML = original; }, 1500);
+            }).catch(() => {});
+        }
+
+        function buildActions(text, wrap) {
+            const actions = document.createElement('div');
+            actions.className = 'msg-actions';
+            const copyBtn = document.createElement('button');
+            copyBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> ᴄᴏᴘʏ';
+            copyBtn.onclick = () => copyText(text, copyBtn);
+            const regenBtn = document.createElement('button');
+            regenBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L14 11h7V4l-3.35 2.35z"/></svg> ᴜʟᴀɴɢɪ';
+            regenBtn.onclick = () => regenerate();
+            actions.appendChild(copyBtn);
+            actions.appendChild(regenBtn);
+            wrap.appendChild(actions);
+        }
+
         function appendMessage(role, text, imageUrl) {
             document.getElementById('emptyState').style.display = 'none';
             const area = document.getElementById('chatArea');
+            if (role === 'user') {
+                const div = document.createElement('div');
+                div.className = 'msg user';
+                div.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
+                if (imageUrl) {
+                    const img = document.createElement('img');
+                    img.src = imageUrl; img.className = 'attach';
+                    div.appendChild(img);
+                }
+                area.appendChild(div);
+                area.scrollTop = area.scrollHeight;
+                return div;
+            }
+            const wrap = document.createElement('div');
+            wrap.className = 'msg-wrap';
             const div = document.createElement('div');
             div.className = 'msg ' + role;
             div.innerHTML = escapeHtml(text).replace(/\n/g, '<br>');
-            if (imageUrl) {
-                const img = document.createElement('img');
-                img.src = imageUrl; img.className = 'attach';
-                div.appendChild(img);
-            }
-            area.appendChild(div);
+            wrap.appendChild(div);
+            if (!role.includes('error')) buildActions(text, wrap);
+            area.appendChild(wrap);
             area.scrollTop = area.scrollHeight;
             return div;
         }
         function appendMessageTyped(role, text) {
             document.getElementById('emptyState').style.display = 'none';
             const area = document.getElementById('chatArea');
+            const wrap = document.createElement('div');
+            wrap.className = 'msg-wrap';
             const div = document.createElement('div');
             div.className = 'msg ' + role;
-            area.appendChild(div);
+            wrap.appendChild(div);
+            area.appendChild(wrap);
             const safe = escapeHtml(text);
             let i = 0;
             return new Promise((resolve) => {
@@ -127,6 +179,7 @@
                         i++;
                         setTimeout(typeNext, 15);
                     } else {
+                        buildActions(text, wrap);
                         resolve();
                     }
                 }
@@ -154,14 +207,27 @@
             appendMessage('user', message || '(gambar)', pendingImage);
             const imageToSend = pendingImage;
             input.value = '';
+            input.style.height = 'auto';
             clearImage();
-            showTyping();
 
+            lastUserPayload = { message, image: imageToSend };
+            history.push({ role: 'user', content: message || '(gambar)' });
+            await requestAI();
+        }
+
+        async function regenerate() {
+            if (!lastUserPayload) return;
+            if (history.length && history[history.length - 1].role === 'assistant') history.pop();
+            await requestAI();
+        }
+
+        async function requestAI() {
+            showTyping();
             try {
                 const r = await fetch(API_BASE + '/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message, image: imageToSend, history })
+                    body: JSON.stringify({ message: lastUserPayload.message, image: lastUserPayload.image, history: history.slice(0, -1) })
                 });
                 const d = await r.json();
                 hideTyping();
@@ -169,7 +235,6 @@
                     appendMessage('ai error', d.error);
                 } else {
                     await appendMessageTyped('ai', d.reply);
-                    history.push({ role: 'user', content: message || '(gambar)' });
                     history.push({ role: 'assistant', content: d.reply });
                     if (history.length > 20) history = history.slice(-20);
                 }
