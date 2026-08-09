@@ -189,7 +189,7 @@
             try { return JSON.parse(localStorage.getItem(getStorageKey()) || '[]'); } catch (e) { return []; }
         }
         function saveAllChats(chats) {
-            localStorage.setItem(getStorageKey(), JSON.stringify(chats));
+            try { localStorage.setItem(getStorageKey(), JSON.stringify(chats)); } catch (e) {}
         }
         function saveCurrentChat() {
             if (!currentChatId || history.length === 0) return;
@@ -500,22 +500,29 @@
             if (!message && !pendingImage && !pendingDocument) return;
 
             const displayText = message || (pendingDocument ? `(dokumen: ${pendingDocument.name})` : '(gambar)');
-            appendMessage('user', displayText, pendingImage);
             const imageToSend = pendingImage;
             const docToSend = pendingDocument;
+
             input.value = '';
             input.style.height = 'auto';
             clearAttachment();
 
-            let finalMessage = message;
-            if (docToSend) {
-                finalMessage = `${message ? message + '\n\n' : ''}[Isi dokumen "${docToSend.name}"]:\n${docToSend.content}`;
-            }
+            try {
+                appendMessage('user', displayText, imageToSend);
 
-            lastUserPayload = { message: finalMessage, image: imageToSend };
-            history.push({ role: 'user', content: displayText });
-            try { saveCurrentChat(); } catch (e) {}
-            await requestAI();
+                let finalMessage = message;
+                if (docToSend) {
+                    finalMessage = `${message ? message + '\n\n' : ''}[Isi dokumen "${docToSend.name}"]:\n${docToSend.content}`;
+                }
+
+                lastUserPayload = { message: finalMessage, image: imageToSend };
+                history.push({ role: 'user', content: displayText });
+                try { saveCurrentChat(); } catch (e) {}
+                await requestAI();
+            } catch (e) {
+                hideTyping();
+                appendMessage('ai error', 'ᴛᴇʀᴊᴀᴅɪ ᴋᴇsᴀʟᴀʜᴀɴ, ᴄᴏʙᴀ ʟᴀɢɪ');
+            }
         }
 
         async function regenerate() {
@@ -525,9 +532,9 @@
         }
 
         async function requestAI() {
-            const hasDoc = lastUserPayload.message && lastUserPayload.message.includes('[Isi dokumen');
-            showTyping(hasDoc ? '...ᴍᴇᴍʙᴀᴄᴀ ᴅᴏᴋᴜᴍᴇɴ' : '...ʙᴇʀᴘɪᴋɪʀ');
             try {
+                const hasDoc = lastUserPayload.message && lastUserPayload.message.includes('[Isi dokumen');
+                showTyping(hasDoc ? '...ᴍᴇᴍʙᴀᴄᴀ ᴅᴏᴋᴜᴍᴇɴ' : '...ʙᴇʀᴘɪᴋɪʀ');
                 await apiBaseReady;
                 if (!API_BASE) { hideTyping(); appendMessage('ai error', 'sᴇʀᴠᴇʀ ᴛɪᴅᴀᴋ ᴛᴇʀʜᴜʙᴜɴɢ'); return; }
                 const r = await fetch(API_BASE + '/api/ai', {
