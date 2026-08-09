@@ -30,6 +30,17 @@
         .sidebar button { text-align: left; padding: 12px 10px; border: none; background: none; font: 13px sans-serif; color: #333; cursor: pointer; border-radius: 10px; display: flex; align-items: center; gap: 10px; }
         .sidebar button:active { background: #f0f4f8; }
         .sidebar button svg { width: 18px; height: 18px; fill: #666; flex-shrink: 0; }
+        .sidebar-divider { height: 1px; background: #eee; margin: 12px 0; }
+        .new-chat-btn { background: #e3f2fd !important; color: var(--biru) !important; font-weight: bold !important; margin-bottom: 10px; }
+        .new-chat-btn svg { fill: var(--biru) !important; }
+        .sidebar-section-label { font: bold 10px sans-serif; color: #999; text-transform: uppercase; letter-spacing: .5px; padding: 4px 10px; margin-top: 4px; }
+        .chat-history-list { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .chat-history-item { text-align: left; padding: 10px; border: none; background: none; font: 12px sans-serif; color: #444; cursor: pointer; border-radius: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+        .chat-history-item:active, .chat-history-item.active { background: #f0f4f8; }
+        .chat-history-item .title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .chat-history-item .del-btn { flex-shrink: 0; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; opacity: 0.5; }
+        .chat-history-item .del-btn svg { width: 13px; height: 13px; fill: #c0392b; }
+        .chat-history-empty { font-size: 11px; color: #bbb; padding: 10px; text-align: center; }
 
         .chat-area { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
         .msg { max-width: 82%; padding: 12px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
@@ -39,6 +50,9 @@
         .msg .md-h2 { font-size: 15px; font-weight: bold; margin: 6px 0 4px; }
         .msg .md-h3 { font-size: 14px; font-weight: bold; margin: 4px 0 3px; }
         .msg .md-code { background: #f0f4f8; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+        .msg .md-table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 12px; }
+        .msg .md-table th, .msg .md-table td { border: 1px solid #e0e0e0; padding: 6px 8px; text-align: left; }
+        .msg .md-table th { background: #f7f8fa; font-weight: bold; }
         .msg.ai.error { background: #fdeaea; color: #c0392b; }
         .msg img.attach { max-width: 100%; border-radius: 10px; margin-top: 8px; display: block; }
         .msg-actions { display: flex; gap: 6px; margin-top: 6px; align-self: flex-start; }
@@ -96,6 +110,12 @@
         <button onclick="window.location.href='/anime'">
             <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-2z"/></svg> Anime
         </button>
+        <div class="sidebar-divider"></div>
+        <button class="new-chat-btn" onclick="startNewChat()">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> Obrolan Baru
+        </button>
+        <div class="sidebar-section-label">ʀɪᴡᴀʏᴀᴛ</div>
+        <div id="chatHistoryList" class="chat-history-list"></div>
     </div>
 
     <div class="topbar">
@@ -142,6 +162,7 @@
         let API_BASE = localStorage.getItem('aeternum_api_base') || '';
         let history = [];
         let pendingImage = null;
+        let currentChatId = null;
 
         async function initApiBase() {
             const manual = localStorage.getItem('aeternum_api_base');
@@ -156,17 +177,90 @@
         }
         const apiBaseReady = initApiBase();
 
+        function getUserId() {
+            try {
+                const u = JSON.parse(localStorage.getItem('aeternum_user') || 'null');
+                return u && u.id ? String(u.id) : 'guest';
+            } catch (e) { return 'guest'; }
+        }
+        function getStorageKey() { return 'aeternum_ai_chats_' + getUserId(); }
+        function loadAllChats() {
+            try { return JSON.parse(localStorage.getItem(getStorageKey()) || '[]'); } catch (e) { return []; }
+        }
+        function saveAllChats(chats) {
+            localStorage.setItem(getStorageKey(), JSON.stringify(chats));
+        }
+        function saveCurrentChat() {
+            if (!currentChatId || history.length === 0) return;
+            let chats = loadAllChats();
+            const firstUserMsg = history.find(h => h.role === 'user');
+            const title = firstUserMsg ? String(firstUserMsg.content).slice(0, 40) : 'Obrolan';
+            const idx = chats.findIndex(c => c.id === currentChatId);
+            const chatData = { id: currentChatId, title, messages: history, updatedAt: Date.now() };
+            if (idx >= 0) chats[idx] = chatData; else chats.unshift(chatData);
+            chats.sort((a, b) => b.updatedAt - a.updatedAt);
+            saveAllChats(chats.slice(0, 30));
+            renderChatHistoryList();
+        }
+        function renderChatHistoryList() {
+            const list = document.getElementById('chatHistoryList');
+            const chats = loadAllChats();
+            if (!chats.length) { list.innerHTML = '<div class="chat-history-empty">ʙᴇʟᴜᴍ ᴀᴅᴀ ʀɪᴡᴀʏᴀᴛ</div>'; return; }
+            list.innerHTML = chats.map(c => `
+                <div class="chat-history-item ${c.id === currentChatId ? 'active' : ''}" onclick="openChat('${c.id}')">
+                    <span class="title">${escapeHtml(c.title || 'Obrolan')}</span>
+                    <span class="del-btn" onclick="event.stopPropagation(); deleteChat('${c.id}')">
+                        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    </span>
+                </div>
+            `).join('');
+        }
+        function openChat(chatId) {
+            const chats = loadAllChats();
+            const chat = chats.find(c => c.id === chatId);
+            if (!chat) return;
+            currentChatId = chatId;
+            history = chat.messages || [];
+            lastUserPayload = null;
+            const area = document.getElementById('chatArea');
+            area.innerHTML = '';
+            history.forEach(m => {
+                if (m.role === 'user') appendMessage('user', m.content);
+                else if (m.role === 'assistant') appendMessage('ai', m.content);
+            });
+            if (!history.length) area.innerHTML = '<div class="empty-state" id="emptyState"><div>ᴍᴜʟᴀɪ ᴏʙʀᴏʟᴀɴ ᴅᴇɴɢᴀɴ ᴀɪ</div></div>';
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            renderChatHistoryList();
+        }
+        function deleteChat(chatId) {
+            let chats = loadAllChats().filter(c => c.id !== chatId);
+            saveAllChats(chats);
+            if (chatId === currentChatId) startNewChat();
+            else renderChatHistoryList();
+        }
+        function startNewChat() {
+            currentChatId = 'chat_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+            history = [];
+            lastUserPayload = null;
+            document.getElementById('chatArea').innerHTML = '<div class="empty-state" id="emptyState"><div>ᴍᴜʟᴀɪ ᴏʙʀᴏʟᴀɴ ᴅᴇɴɢᴀɴ ᴀɪ</div></div>';
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            renderChatHistoryList();
+        }
+        startNewChat();
+        renderChatHistoryList();
+
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('sidebarOverlay').classList.toggle('active');
+            if (document.getElementById('sidebar').classList.contains('active')) renderChatHistoryList();
         }
         function toggleMenu() {
             document.getElementById('dropdownMenu').classList.toggle('active');
         }
         function clearChat() {
-            history = [];
-            lastUserPayload = null;
-            document.getElementById('chatArea').innerHTML = '<div class="empty-state" id="emptyState"><div>ᴍᴜʟᴀɪ ᴏʙʀᴏʟᴀɴ ᴅᴇɴɢᴀɴ ᴀɪ</div></div>';
+            startNewChat();
             document.getElementById('dropdownMenu').classList.remove('active');
         }
         document.addEventListener('click', function(e) {
@@ -215,8 +309,46 @@
             document.getElementById('fileInput').value = '';
         }
         function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+        function parseMarkdownTables(text) {
+            const lines = text.split('\n');
+            let out = [];
+            let i = 0;
+            while (i < lines.length) {
+                const line = lines[i];
+                const isTableRow = /^\s*\|.*\|\s*$/.test(line);
+                const nextLine = lines[i + 1] || '';
+                const isSeparator = /^\s*\|?[\s:|-]+\|?\s*$/.test(nextLine) && nextLine.includes('-');
+                if (isTableRow && isSeparator) {
+                    const headerCells = line.split('|').map(c => c.trim()).filter((c, idx, arr) => !(idx === 0 && c === '') && !(idx === arr.length - 1 && c === ''));
+                    let tableRows = [];
+                    let j = i + 2;
+                    while (j < lines.length && /^\s*\|.*\|\s*$/.test(lines[j])) {
+                        const rowCells = lines[j].split('|').map(c => c.trim()).filter((c, idx, arr) => !(idx === 0 && c === '') && !(idx === arr.length - 1 && c === ''));
+                        tableRows.push(rowCells);
+                        j++;
+                    }
+                    let tableHtml = '<table class="md-table"><thead><tr>';
+                    headerCells.forEach(c => { tableHtml += `<th>${c}</th>`; });
+                    tableHtml += '</tr></thead><tbody>';
+                    tableRows.forEach(row => {
+                        tableHtml += '<tr>';
+                        row.forEach(c => { tableHtml += `<td>${c}</td>`; });
+                        tableHtml += '</tr>';
+                    });
+                    tableHtml += '</tbody></table>';
+                    out.push(tableHtml);
+                    i = j;
+                } else {
+                    out.push(line);
+                    i++;
+                }
+            }
+            return out.join('\n');
+        }
+
         function renderMarkdown(text) {
             let safe = escapeHtml(text);
+            safe = parseMarkdownTables(safe);
             safe = safe.replace(/^### (.+)$/gm, '<h3 class="md-h3">$1</h3>');
             safe = safe.replace(/^## (.+)$/gm, '<h2 class="md-h2">$1</h2>');
             safe = safe.replace(/^# (.+)$/gm, '<h1 class="md-h1">$1</h1>');
@@ -224,7 +356,9 @@
             safe = safe.replace(/`([^`]+?)`/g, '<code class="md-code">$1</code>');
             safe = safe.replace(/\n{3,}/g, '\n\n');
             safe = safe.replace(/(<\/h[1-3]>)\n/g, '$1');
+            safe = safe.replace(/(<\/table>)\n/g, '$1');
             safe = safe.replace(/\n/g, '<br>');
+            safe = safe.replace(/<br>(<table)/g, '$1');
             return safe;
         }
 
@@ -365,6 +499,7 @@
 
             lastUserPayload = { message: finalMessage, image: imageToSend };
             history.push({ role: 'user', content: displayText });
+            saveCurrentChat();
             await requestAI();
         }
 
@@ -376,7 +511,7 @@
 
         async function requestAI() {
             const hasDoc = lastUserPayload.message && lastUserPayload.message.includes('[Isi dokumen');
-            showTyping(hasDoc ? 'ᴍᴇᴍʙᴀᴄᴀ ᴅᴏᴋᴜᴍᴇɴ...' : 'ʙᴇʀᴘɪᴋɪʀ...');
+            showTyping(hasDoc ? '...ᴍᴇᴍʙᴀᴄᴀ ᴅᴏᴋᴜᴍᴇɴ' : '...ʙᴇʀᴘɪᴋɪʀ');
             try {
                 await apiBaseReady;
                 if (!API_BASE) { hideTyping(); appendMessage('ai error', 'sᴇʀᴠᴇʀ ᴛɪᴅᴀᴋ ᴛᴇʀʜᴜʙᴜɴɢ'); return; }
@@ -386,13 +521,14 @@
                     body: JSON.stringify({ message: lastUserPayload.message, image: lastUserPayload.image, history: history.slice(0, -1) })
                 });
                 const d = await r.json();
-                if (d.success && d.download) showTyping('ᴍᴇᴍʙᴜᴀᴛ ғɪʟᴇ...');
+                if (d.success && d.download) showTyping('...ᴍᴇᴍʙᴜᴀᴛ ғɪʟᴇ');
                 hideTyping();
                 if (d.error) {
                     appendMessage('ai error', d.error);
                 } else {
                     await appendMessageTyped('ai', d.reply, d.download);
                     history.push({ role: 'assistant', content: d.reply });
+                    saveCurrentChat();
                     if (history.length > 20) history = history.slice(-20);
                 }
             } catch (e) {
