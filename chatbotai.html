@@ -35,22 +35,32 @@
         .msg { max-width: 82%; padding: 12px 14px; border-radius: 16px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
         .msg.user { align-self: flex-end; background: var(--biru); color: #fff; border-bottom-right-radius: 4px; }
         .msg.ai { align-self: flex-start; background: #fff; color: #222; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-        .msg .md-h1 { font-size: 17px; font-weight: bold; margin: 8px 0 6px; color: var(--biru); }
-        .msg .md-h2 { font-size: 15px; font-weight: bold; margin: 8px 0 6px; color: var(--biru); }
-        .msg .md-h3 { font-size: 14px; font-weight: bold; margin: 6px 0 4px; }
-        .msg .md-code { background: #f0f4f8; color: #c0392b; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }
+        .msg .md-h1 { font-size: 16px; font-weight: bold; margin: 6px 0 4px; }
+        .msg .md-h2 { font-size: 15px; font-weight: bold; margin: 6px 0 4px; }
+        .msg .md-h3 { font-size: 14px; font-weight: bold; margin: 4px 0 3px; }
+        .msg .md-code { background: #f0f4f8; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px; }
         .msg.ai.error { background: #fdeaea; color: #c0392b; }
         .msg img.attach { max-width: 100%; border-radius: 10px; margin-top: 8px; display: block; }
         .msg-actions { display: flex; gap: 6px; margin-top: 6px; align-self: flex-start; }
         .msg-actions button { border: none; background: transparent; color: var(--abu); font-size: 11px; display: flex; align-items: center; gap: 4px; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
         .msg-actions button:active { background: rgba(0,0,0,0.05); }
         .msg-actions svg { width: 13px; height: 13px; fill: var(--abu); }
+        .file-card { display: flex; align-items: center; gap: 10px; background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; margin-top: 6px; cursor: pointer; max-width: 260px; }
+        .file-card:active { background: #eef0f3; }
+        .file-card-icon { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; }
+        .file-card-icon svg { width: 18px; height: 18px; fill: var(--abu); }
+        .file-card-info { flex: 1; min-width: 0; }
+        .file-card-name { font-size: 13px; font-weight: bold; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-card-type { font-size: 11px; color: var(--abu); }
+        .file-card-dl { width: 24px; height: 24px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .file-card-dl svg { width: 16px; height: 16px; fill: var(--biru); }
         .msg-wrap { display: flex; flex-direction: column; max-width: 82%; align-self: flex-start; }
         .msg-wrap .msg { max-width: 100%; align-self: flex-start; }
-        .typing { align-self: flex-start; padding: 12px 16px; background: #fff; border-radius: 16px; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-        .typing span { display: inline-block; width: 6px; height: 6px; margin: 0 2px; background: var(--abu); border-radius: 50%; animation: blink 1.2s infinite; }
-        .typing span:nth-child(2) { animation-delay: .2s; }
-        .typing span:nth-child(3) { animation-delay: .4s; }
+        .typing { align-self: flex-start; padding: 10px 14px; background: #fff; border-radius: 16px; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 8px; }
+        .typing .typing-label { font-size: 12px; color: var(--abu); }
+        .typing .dot { display: inline-block; width: 6px; height: 6px; margin: 0 2px; background: var(--abu); border-radius: 50%; animation: blink 1.2s infinite; }
+        .typing .dot:nth-child(3) { animation-delay: .2s; }
+        .typing .dot:nth-child(4) { animation-delay: .4s; }
         @keyframes blink { 0%, 80%, 100% { opacity: .3; } 40% { opacity: 1; } }
         .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--abu); text-align: center; padding: 20px; gap: 10px; }
         .empty-state svg { width: 48px; height: 48px; fill: var(--abu); }
@@ -212,6 +222,8 @@
             safe = safe.replace(/^# (.+)$/gm, '<h1 class="md-h1">$1</h1>');
             safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
             safe = safe.replace(/`([^`]+?)`/g, '<code class="md-code">$1</code>');
+            safe = safe.replace(/\n{3,}/g, '\n\n');
+            safe = safe.replace(/(<\/h[1-3]>)\n/g, '$1');
             safe = safe.replace(/\n/g, '<br>');
             return safe;
         }
@@ -226,7 +238,29 @@
             }).catch(() => {});
         }
 
+        function buildFileCard(download) {
+            const card = document.createElement('div');
+            card.className = 'file-card';
+            card.innerHTML = `
+                <div class="file-card-icon">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                </div>
+                <div class="file-card-info">
+                    <div class="file-card-name">${escapeHtml(download.fileName || 'file')}</div>
+                    <div class="file-card-type">${download.isZip ? 'ZIP Archive' : 'File'}</div>
+                </div>
+                <div class="file-card-dl">
+                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                </div>
+            `;
+            card.onclick = () => { window.open(API_BASE + download.url, '_blank'); };
+            return card;
+        }
+
         function buildActions(text, wrap, download) {
+            if (download && download.url) {
+                wrap.appendChild(buildFileCard(download));
+            }
             const actions = document.createElement('div');
             actions.className = 'msg-actions';
             const copyBtn = document.createElement('button');
@@ -237,13 +271,6 @@
             regenBtn.onclick = () => regenerate();
             actions.appendChild(copyBtn);
             actions.appendChild(regenBtn);
-            if (download && download.url) {
-                const dlBtn = document.createElement('button');
-                dlBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> ᴜɴᴅᴜʜ ' + escapeHtml(download.fileName || 'file');
-                dlBtn.style.color = 'var(--biru)';
-                dlBtn.onclick = () => { window.open(API_BASE + download.url, '_blank'); };
-                actions.appendChild(dlBtn);
-            }
             wrap.appendChild(actions);
         }
 
@@ -287,8 +314,9 @@
             return new Promise((resolve) => {
                 function typeNext() {
                     if (i <= text.length) {
+                        const wasNearBottom = area.scrollHeight - area.scrollTop - area.clientHeight < 80;
                         div.innerHTML = renderMarkdown(text.slice(0, i));
-                        area.scrollTop = area.scrollHeight;
+                        if (wasNearBottom) area.scrollTop = area.scrollHeight;
                         i++;
                         setTimeout(typeNext, 15);
                     } else {
@@ -299,11 +327,16 @@
                 typeNext();
             });
         }
-        function showTyping() {
+        function showTyping(label) {
+            hideTyping();
             const area = document.getElementById('chatArea');
             const div = document.createElement('div');
             div.className = 'typing'; div.id = 'typingIndicator';
-            div.innerHTML = '<span></span><span></span><span></span>';
+            if (label) {
+                div.innerHTML = `<span class="typing-label">${escapeHtml(label)}</span><span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
+            } else {
+                div.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+            }
             area.appendChild(div);
             area.scrollTop = area.scrollHeight;
         }
@@ -342,7 +375,8 @@
         }
 
         async function requestAI() {
-            showTyping();
+            const hasDoc = lastUserPayload.message && lastUserPayload.message.includes('[Isi dokumen');
+            showTyping(hasDoc ? 'ᴍᴇᴍʙᴀᴄᴀ ᴅᴏᴋᴜᴍᴇɴ...' : 'ʙᴇʀᴘɪᴋɪʀ...');
             try {
                 await apiBaseReady;
                 if (!API_BASE) { hideTyping(); appendMessage('ai error', 'sᴇʀᴠᴇʀ ᴛɪᴅᴀᴋ ᴛᴇʀʜᴜʙᴜɴɢ'); return; }
@@ -352,6 +386,7 @@
                     body: JSON.stringify({ message: lastUserPayload.message, image: lastUserPayload.image, history: history.slice(0, -1) })
                 });
                 const d = await r.json();
+                if (d.success && d.download) showTyping('ᴍᴇᴍʙᴜᴀᴛ ғɪʟᴇ...');
                 hideTyping();
                 if (d.error) {
                     appendMessage('ai error', d.error);
