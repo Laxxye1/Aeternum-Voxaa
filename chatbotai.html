@@ -80,7 +80,8 @@
         .empty-state svg { width: 48px; height: 48px; fill: var(--abu); }
 
         .input-bar { background: #fff; padding: 10px 12px; display: flex; gap: 8px; align-items: flex-end; border-top: 1px solid #eee; position: sticky; bottom: 0; z-index: 10; }
-        .input-bar textarea { flex: 1; resize: none; border: 1px solid #ddd; border-radius: 14px; padding: 10px 14px; font-size: 14px; font-family: sans-serif; max-height: 100px; min-height: 42px; line-height: 1.4; }
+        .input-bar textarea { flex: 1; resize: none; border: 1px solid #ddd; border-radius: 14px; padding: 10px 14px; font-size: 14px; font-family: sans-serif; max-height: 100px; min-height: 42px; line-height: 1.4; outline: none; }
+        .input-bar textarea:focus { border-color: var(--biru); }
         .icon-btn { width: 42px; height: 42px; border-radius: 50%; border: none; background: #f0f4f8; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
         .icon-btn svg { width: 20px; height: 20px; fill: var(--biru); }
         .send-btn { width: 42px; height: 42px; border-radius: 50%; border: none; background: var(--biru); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
@@ -150,7 +151,7 @@
         <button class="icon-btn" onclick="document.getElementById('fileInput').click()">
             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
         </button>
-        <input type="file" id="fileInput" accept="image/*,.pdf,.txt,.md,.json,.js,.html,.css,.py,.java,.c,.cpp,.doc,.docx" style="display:none" onchange="handleFileSelect(event)">
+        <input type="file" id="fileInput" accept="image/*,.txt,.md,.json,.js,.jsx,.ts,.tsx,.html,.htm,.css,.scss,.py,.java,.c,.cpp,.h,.cs,.php,.rb,.go,.rs,.swift,.kt,.sql,.sh,.yml,.yaml,.xml,.csv,.log,.ini,.env,.pdf,.doc,.docx" style="display:none" onchange="handleFileSelect(event)">
         <textarea id="msgInput" rows="1" placeholder="ᴋᴇᴛɪᴋ ᴘᴇsᴀɴ..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
         <button class="send-btn" onclick="sendMessage()">
             <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
@@ -270,13 +271,16 @@
         });
 
         let pendingDocument = null;
-        const TEXT_EXTENSIONS = ['.txt', '.md', '.json', '.js', '.html', '.css', '.py', '.java', '.c', '.cpp'];
+        const TEXT_EXTENSIONS = ['.txt', '.md', '.json', '.js', '.jsx', '.ts', '.tsx', '.html', '.htm', '.css', '.scss', '.py', '.java', '.c', '.cpp', '.h', '.cs', '.php', '.rb', '.go', '.rs', '.swift', '.kt', '.sql', '.sh', '.yml', '.yaml', '.xml', '.csv', '.log', '.ini', '.env'];
+        const UNSUPPORTED_BINARY = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.zip', '.rar'];
 
         function handleFileSelect(e) {
             const file = e.target.files[0];
             if (!file) return;
+            const lowerName = file.name.toLowerCase();
             const isImage = file.type.startsWith('image/');
-            const isTextDoc = TEXT_EXTENSIONS.some(ext => file.name.toLowerCase().endsWith(ext));
+            const isTextDoc = TEXT_EXTENSIONS.some(ext => lowerName.endsWith(ext));
+            const isUnsupportedBinary = UNSUPPORTED_BINARY.some(ext => lowerName.endsWith(ext));
 
             if (isImage) {
                 const reader = new FileReader();
@@ -287,6 +291,7 @@
                     bar.style.display = 'flex';
                     bar.innerHTML = `<img src="${pendingImage}"><div class="remove" onclick="clearAttachment()">×</div>`;
                 };
+                reader.onerror = () => { showAttachError('ɢᴀɢᴀʟ ᴍᴇᴍʙᴀᴄᴀ ɢᴀᴍʙᴀʀ'); };
                 reader.readAsDataURL(file);
             } else if (isTextDoc) {
                 const reader = new FileReader();
@@ -297,10 +302,20 @@
                     bar.style.display = 'flex';
                     bar.innerHTML = `<div class="doc-chip">${escapeHtml(file.name)}</div><div class="remove" onclick="clearAttachment()">×</div>`;
                 };
+                reader.onerror = () => { showAttachError('ɢᴀɢᴀʟ ᴍᴇᴍʙᴀᴄᴀ ᴅᴏᴋᴜᴍᴇɴ'); };
                 reader.readAsText(file);
+            } else if (isUnsupportedBinary) {
+                showAttachError('ғᴏʀᴍᴀᴛ ' + lowerName.split('.').pop().toUpperCase() + ' ʙᴇʟᴜᴍ ʙɪsᴀ ᴅɪʙᴀᴄᴀ ɪsɪɴʏᴀ, ɢᴜɴᴀᴋᴀɴ ғɪʟᴇ ᴛᴇᴋs ᴀᴛᴀᴜ ɢᴀᴍʙᴀʀ');
             } else {
-                alert('ᴛɪᴘᴇ ғɪʟᴇ ɪɴɪ ʙᴇʟᴜᴍ ᴅɪᴅᴜᴋᴜɴɢ ᴜɴᴛᴜᴋ ᴅɪʙᴀᴄᴀ ʟᴀɴɢsᴜɴɢ');
+                showAttachError('ᴛɪᴘᴇ ғɪʟᴇ ɪɴɪ ʙᴇʟᴜᴍ ᴅɪᴅᴜᴋᴜɴɢ');
             }
+            document.getElementById('fileInput').value = '';
+        }
+        function showAttachError(msg) {
+            const bar = document.getElementById('previewBar');
+            bar.style.display = 'flex';
+            bar.innerHTML = `<div class="doc-chip" style="background:#fdeaea;color:#c0392b">${escapeHtml(msg)}</div><div class="remove" onclick="clearAttachment()">×</div>`;
+            setTimeout(() => { if (!pendingImage && !pendingDocument) clearAttachment(); }, 3000);
         }
         function clearAttachment() {
             pendingImage = null;
@@ -499,7 +514,7 @@
 
             lastUserPayload = { message: finalMessage, image: imageToSend };
             history.push({ role: 'user', content: displayText });
-            saveCurrentChat();
+            try { saveCurrentChat(); } catch (e) {}
             await requestAI();
         }
 
