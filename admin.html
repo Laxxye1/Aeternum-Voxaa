@@ -3,165 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aeternum Voxaa - Anime</title>
+    <title>Aeternum Voxaa - Admin</title>
     <style>
         @font-face { font-family: 'TeutonNormal'; src: url('/fonts/TeutonNormal.otf') format('opentype'); font-display: swap; }
-        :root { --biru: #0F52BA; --bg: #f0f4f8; --putih: #fff; --abu: #999; }
+        :root { --biru: #0F52BA; --bg: #f0f4f8; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'TeutonNormal', sans-serif; }
-        body { background: var(--bg); padding-bottom: 40px; }
-        .topbar { background: var(--biru); padding: 16px; color: #fff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .home-btn { width: 32px; height: 32px; background: none; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; border-radius: 8px; }
-        .home-btn:active { background: rgba(255,255,255,0.1); }
-        .home-btn svg { width: 20px; height: 20px; fill: #fff; }
-        .topbar h1 { font: bold 16px monospace; }
-        .search-bar { display: flex; gap: 8px; padding: 16px; }
-        .search-bar input { flex: 1; padding: 12px 14px; border-radius: 12px; border: 1px solid #ddd; font-size: 14px; }
-        .search-bar button { padding: 12px 20px; background: var(--biru); color: #fff; border: none; border-radius: 12px; font: bold 13px sans-serif; cursor: pointer; }
-        .tabs { display: flex; gap: 8px; padding: 0 16px 12px; }
-        .tab-btn { flex: 1; padding: 10px; border-radius: 10px; border: none; background: #fff; color: var(--biru); font: bold 12px sans-serif; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-        .tab-btn.active { background: var(--biru); color: #fff; }
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 16px; }
-        .card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; }
-        .card img { width: 100%; height: 160px; object-fit: cover; display: block; background: #eee; }
-        .card .info { padding: 10px; }
-        .card .info .title { font: bold 12px sans-serif; color: #222; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .card .info .meta { font-size: 10px; color: var(--abu); display: flex; justify-content: space-between; }
-        .card .info .score { color: #f39c12; font-weight: bold; }
-        .loading, .empty { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--abu); font-size: 13px; }
-        .detail-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; padding: 20px; }
-        .detail-overlay.active { display: flex; }
-        .detail-box { background: #fff; border-radius: 20px; max-width: 420px; width: 100%; max-height: 85vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y; }
-        .detail-box img { width: 100%; height: 220px; object-fit: cover; }
-        .detail-box .content { padding: 20px; }
-        .detail-box h2 { font: bold 17px sans-serif; color: #222; margin-bottom: 8px; }
-        .detail-box .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-        .detail-box .tag { background: #e3f2fd; color: var(--biru); font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 8px; }
-        .detail-box .synopsis { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 16px; }
-        .detail-box .stat-row { display: flex; gap: 10px; margin-bottom: 16px; }
-        .detail-box .stat { flex: 1; background: #f9fafb; border-radius: 10px; padding: 10px; text-align: center; }
-        .detail-box .stat .val { font: bold 15px sans-serif; color: var(--biru); }
-        .detail-box .stat .lbl { font-size: 10px; color: var(--abu); }
-        .detail-box .legal-btn { display: block; width: 100%; padding: 14px; background: var(--biru); color: #fff; border: none; border-radius: 12px; font: bold 14px sans-serif; text-align: center; text-decoration: none; margin-bottom: 8px; }
+        body { background: var(--bg); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .box { background: #fff; border-radius: 20px; max-width: 420px; width: 100%; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .box h1 { font: bold 18px monospace; color: var(--biru); margin-bottom: 4px; }
+        .box .sub { font-size: 12px; color: #999; margin-bottom: 24px; }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font: bold 11px sans-serif; color: #666; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+        .field input { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid #ddd; font-size: 14px; }
+        .field .hint { font-size: 11px; color: #aaa; margin-top: 6px; }
+        .btn-row { display: flex; gap: 8px; margin-top: 20px; }
+        .btn { flex: 1; padding: 13px; border: none; border-radius: 12px; font: bold 13px sans-serif; cursor: pointer; }
+        .btn-primary { background: var(--biru); color: #fff; }
+        .btn-secondary { background: #f0f0f0; color: #555; }
+        .status { margin-top: 16px; padding: 12px; border-radius: 10px; font-size: 12px; text-align: center; display: none; }
+        .status.ok { display: block; background: #e6f7ee; color: #1a7a4c; }
+        .status.fail { display: block; background: #fdeaea; color: #c0392b; }
+        .status.loading { display: block; background: #eef2f7; color: #666; }
+        .current { margin-top: 20px; padding: 14px; background: #f9fafb; border-radius: 12px; font-size: 12px; color: #555; word-break: break-all; }
+        .current b { color: var(--biru); display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+        .backup-section { margin-top: 24px; }
+        .backup-section h2 { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+        .backup-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #f9fafb; border-radius: 10px; margin-bottom: 6px; }
+        .backup-item .info { font-size: 11px; color: #555; }
+        .backup-item .info .name { font-weight: bold; color: #333; display: block; margin-bottom: 2px; }
+        .backup-item a { font-size: 11px; color: var(--biru); font-weight: bold; text-decoration: none; padding: 6px 10px; background: #e3f2fd; border-radius: 8px; }
+        .backup-empty { font-size: 12px; color: #999; text-align: center; padding: 14px; }
+        .back-link { display: block; text-align: center; margin-top: 18px; font-size: 12px; color: var(--biru); text-decoration: none; }
     </style>
 </head>
 <body>
-    <div class="topbar">
-        <h1>anime catalog</h1>
-        <button class="home-btn" onclick="window.location.href='/dashboard'" title="Keluar">
-            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        </button>
-    </div>
+    <div class="box">
+        <h1>ᴀᴅᴍɪɴ</h1>
 
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="cari judul anime..." onkeydown="if(event.key==='Enter')searchAnime()">
-        <button onclick="searchAnime()">cari</button>
-    </div>
+        <div class="field">
+            <label>Alamat Server Backend</label>
+            <input type="text" id="apiBaseInput" placeholder="https://domain-panel.com:port">
+        </div>
 
-    <div class="tabs">
-        <button class="tab-btn active" id="tabTop" onclick="loadTop()">populer</button>
-        <button class="tab-btn" id="tabSeason" onclick="loadSeasonal()">musim ini</button>
-    </div>
+        <div class="btn-row">
+            <button class="btn btn-secondary" onclick="testConnection()">ᴛᴇsᴛ ᴋᴏɴᴇᴋsɪ</button>
+            <button class="btn btn-primary" onclick="saveApiBase()">sɪᴍᴘᴀɴ</button>
+        </div>
 
-    <div id="grid" class="grid"></div>
+        <div class="status" id="statusBox"></div>
 
-    <div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
-        <div class="detail-box" id="detailBox"></div>
+        <div class="current" id="currentBox" style="display:none">
+            <b>Alamat Aktif Sekarang</b>
+            <span id="currentValue"></span>
+        </div>
+
+        <div class="backup-section">
+            <h2>ʙᴀᴄᴋᴜᴘ ғɪʟᴇ</h2>
+            <div id="backupList"><div class="backup-empty">ᴍᴇᴍᴜᴀᴛ...</div></div>
+        </div>
+
+        <a class="back-link" href="/dashboard">Kembali ke Dashboard</a>
     </div>
 
     <script>
-        const TUNNEL_URL_SOURCE = 'https://raw.githubusercontent.com/Laxxye1/Aeternum-Voxaa/main/tunnel-url.txt';
-        let API_BASE = localStorage.getItem('aeternum_api_base') || '';
-        async function initApiBase() {
-            const manual = localStorage.getItem('aeternum_api_base');
-            if (manual) { API_BASE = manual; return; }
+        let accessGranted = true;
+        (function checkAccess() {
+            let user = null;
+            try { user = JSON.parse(localStorage.getItem('aeternum_user') || 'null'); } catch (e) {}
+            if (!user || user.role !== 'owner') {
+                accessGranted = false;
+                document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;font-family:sans-serif;color:#c0392b;font-weight:bold">ᴀᴋsᴇs ᴅɪᴛᴏʟᴀᴋ</div>';
+                setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+            }
+        })();
+        function loadCurrent() {
+            if (!accessGranted) return;
+            const saved = localStorage.getItem('aeternum_api_base');
+            const box = document.getElementById('currentBox');
+            const val = document.getElementById('currentValue');
+            if (saved) {
+                box.style.display = 'block';
+                val.textContent = saved;
+                document.getElementById('apiBaseInput').value = saved;
+            } else {
+                box.style.display = 'block';
+                val.textContent = '(belum diatur - menggunakan domain saat ini)';
+            }
+        }
+        function normalizeUrl(url) {
+            url = url.trim();
+            if (!url) return '';
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            return url.replace(/\/+$/, '');
+        }
+        async function testConnection() {
+            if (!accessGranted) return;
+            const url = normalizeUrl(document.getElementById('apiBaseInput').value);
+            const status = document.getElementById('statusBox');
+            if (!url) { status.className = 'status fail'; status.textContent = 'ɪsɪ ᴀʟᴀᴍᴀᴛ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ'; return; }
+            status.className = 'status loading'; status.textContent = 'ᴍᴇɴɢᴇᴄᴇᴋ ᴋᴏɴᴇᴋsɪ...';
             try {
-                const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
-                if (r.ok) {
-                    const text = (await r.text()).trim();
-                    if (text.startsWith('https://')) API_BASE = text;
-                }
-            } catch (e) {}
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 6000);
+                const r = await fetch(url + '/api/status', { signal: controller.signal });
+                clearTimeout(timeout);
+                if (r.ok) { status.className = 'status ok'; status.textContent = 'ʙᴇʀʜᴀsɪʟ ᴛᴇʀʜᴜʙᴜɴɢ ᴋᴇ sᴇʀᴠᴇʀ'; }
+                else { status.className = 'status fail'; status.textContent = 'sᴇʀᴠᴇʀ ᴍᴇʀᴇsᴘᴏɴ ᴛᴀᴘɪ ᴇʀʀᴏʀ (' + r.status + ')'; }
+            } catch (e) {
+                status.className = 'status fail'; status.textContent = 'ɢᴀɢᴀʟ ᴛᴇʀʜᴜʙᴜɴɢ, ᴄᴇᴋ ᴀʟᴀᴍᴀᴛ ᴀᴛᴀᴜ sᴇʀᴠᴇʀ';
+            }
         }
-        const apiBaseReady = initApiBase();
-        async function loadTop() {
-            setActiveTab('tabTop');
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '<div class="loading">memuat...</div>';
+        function saveApiBase() {
+            if (!accessGranted) return;
+            const url = normalizeUrl(document.getElementById('apiBaseInput').value);
+            const status = document.getElementById('statusBox');
+            if (!url) { status.className = 'status fail'; status.textContent = 'ɪsɪ ᴀʟᴀᴍᴀᴛ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ'; return; }
+            localStorage.setItem('aeternum_api_base', url);
+            status.className = 'status ok'; status.textContent = 'ᴛᴇʀsɪᴍᴘᴀɴ, ʜᴀʟᴀᴍᴀɴ ʟᴀɪɴ ᴀᴋᴀɴ ᴍᴇɴɢɢᴜɴᴀᴋᴀɴ ᴀʟᴀᴍᴀᴛ ɪɴɪ';
+            loadCurrent();
+        }
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+        function formatDate(iso) {
+            const d = new Date(iso);
+            return d.toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        }
+        async function loadBackups() {
+            if (!accessGranted) return;
+            const list = document.getElementById('backupList');
+            const apiBase = localStorage.getItem('aeternum_api_base') || '';
+            if (!apiBase) { list.innerHTML = '<div class="backup-empty">ᴀᴛᴜʀ ᴀʟᴀᴍᴀᴛ sᴇʀᴠᴇʀ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ</div>'; return; }
             try {
-                await apiBaseReady;
-                const r = await fetch(API_BASE + '/api/anime/top'); const d = await r.json();
-                renderGrid(d);
-            } catch (e) { grid.innerHTML = '<div class="empty">gagal memuat data</div>'; }
-        }
-        async function loadSeasonal() {
-            setActiveTab('tabSeason');
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '<div class="loading">memuat...</div>';
-            try {
-                await apiBaseReady;
-                const r = await fetch(API_BASE + '/api/anime/seasonal'); const d = await r.json();
-                renderGrid(d);
-            } catch (e) { grid.innerHTML = '<div class="empty">gagal memuat data</div>'; }
-        }
-        async function searchAnime() {
-            const q = document.getElementById('searchInput').value.trim();
-            if (!q) return;
-            setActiveTab(null);
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '<div class="loading">mencari...</div>';
-            try {
-                await apiBaseReady;
-                const r = await fetch(API_BASE + '/api/anime/search?q=' + encodeURIComponent(q)); const d = await r.json();
-                renderGrid(d);
-            } catch (e) { grid.innerHTML = '<div class="empty">gagal mencari</div>'; }
-        }
-        function setActiveTab(id) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            if (id) document.getElementById(id).classList.add('active');
-        }
-        let currentResults = [];
-        function renderGrid(d) {
-            const grid = document.getElementById('grid');
-            if (d.error) { grid.innerHTML = `<div class="empty">${d.error}</div>`; return; }
-            if (!d.results || !d.results.length) { grid.innerHTML = '<div class="empty">tidak ada hasil</div>'; return; }
-            currentResults = d.results;
-            grid.innerHTML = d.results.map((a, i) => `
-                <div class="card" onclick="showDetail(${i})">
-                    <img src="${a.image || ''}" loading="lazy" onerror="this.style.background='#eee'">
-                    <div class="info">
-                        <div class="title">${escapeHtml(a.title)}</div>
-                        <div class="meta"><span class="score">★ ${a.score || '-'}</span><span>${a.episodes ? a.episodes + ' eps' : '-'}</span></div>
+                const r = await fetch(apiBase + '/api/backup/list');
+                const d = await r.json();
+                if (d.error || !d.backups || !d.backups.length) { list.innerHTML = '<div class="backup-empty">ʙᴇʟᴜᴍ ᴀᴅᴀ ʙᴀᴄᴋᴜᴘ</div>'; return; }
+                list.innerHTML = d.backups.map(b => `
+                    <div class="backup-item">
+                        <div class="info"><span class="name">${b.name}</span>${formatDate(b.created)} · ${formatSize(b.size)}</div>
+                        <a href="${apiBase}/api/backup/download/${b.name}" target="_blank">ᴜɴᴅᴜʜ</a>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (e) {
+                list.innerHTML = '<div class="backup-empty">ɢᴀɢᴀʟ ᴍᴇᴍᴜᴀᴛ ʙᴀᴄᴋᴜᴘ</div>';
+            }
         }
-        function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-        function showDetail(i) {
-            const a = currentResults[i];
-            const box = document.getElementById('detailBox');
-            box.innerHTML = `
-                <img src="${a.image || ''}">
-                <div class="content">
-                    <h2>${escapeHtml(a.title)}</h2>
-                    <div class="tags">${(a.genres || []).map(g => `<span class="tag">${escapeHtml(g)}</span>`).join('')}</div>
-                    <div class="stat-row">
-                        <div class="stat"><div class="val">★ ${a.score || '-'}</div><div class="lbl">rating</div></div>
-                        <div class="stat"><div class="val">${a.episodes || '-'}</div><div class="lbl">episode</div></div>
-                        <div class="stat"><div class="val">${a.status ? a.status.split(' ')[0] : '-'}</div><div class="lbl">status</div></div>
-                    </div>
-                    <div class="synopsis">${escapeHtml((a.synopsis || 'Sinopsis tidak tersedia.').slice(0, 400))}${a.synopsis && a.synopsis.length > 400 ? '...' : ''}</div>
-                    <a class="legal-btn" href="${a.url}" target="_blank">info lengkap ᴅɪ myanimelist</a>
-                    <a class="legal-btn" style="background:#00a8e1" href="https://www.crunchyroll.com/search?q=${encodeURIComponent(a.title)}" target="_blank">cari ᴅɪ crunchyroll</a>
-                </div>
-            `;
-            document.getElementById('detailOverlay').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        function closeDetail() {
-            document.getElementById('detailOverlay').classList.remove('active');
-            document.body.style.overflow = '';
-        }
-        loadTop();
+        loadCurrent();
+        loadBackups();
     </script>
 </body>
 </html>
