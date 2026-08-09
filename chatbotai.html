@@ -163,7 +163,9 @@
         let API_BASE = localStorage.getItem('aeternum_api_base') || '';
         let history = [];
         let pendingImage = null;
+        let pendingDocument = null;
         let currentChatId = null;
+        let lastUserPayload = null;
 
         async function initApiBase() {
             const manual = localStorage.getItem('aeternum_api_base');
@@ -270,7 +272,6 @@
             if (!menuBtn && menu.classList.contains('active')) menu.classList.remove('active');
         });
 
-        let pendingDocument = null;
         const TEXT_EXTENSIONS = ['.txt', '.md', '.json', '.js', '.jsx', '.ts', '.tsx', '.html', '.htm', '.css', '.scss', '.py', '.java', '.c', '.cpp', '.h', '.cs', '.php', '.rb', '.go', '.rs', '.swift', '.kt', '.sql', '.sh', '.yml', '.yaml', '.xml', '.csv', '.log', '.ini', '.env'];
         const UNSUPPORTED_BINARY = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.zip', '.rar'];
 
@@ -376,8 +377,6 @@
             safe = safe.replace(/<br>(<table)/g, '$1');
             return safe;
         }
-
-        let lastUserPayload = null;
 
         function copyText(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
