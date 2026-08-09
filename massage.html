@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aeternum Voxaa - Massage</title>
     <style>
+        @font-face { font-family: 'TeutonNormal'; src: url('/fonts/TeutonNormal.otf') format('opentype'); font-display: swap; }
         :root { --biru: #0F52BA; --bg: #f0f4f8; --putih: #fff; --abu: #999; --merah: #ff5252; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'TeutonNormal', sans-serif; }
+        body { background: var(--bg); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
         
         .header { background: var(--biru); color: #fff; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; position: relative; }
         .header .page-title { position: absolute; left: 50%; transform: translateX(-50%); font: bold 15px monospace; }
@@ -81,7 +82,7 @@
         <div class="icon-btn plain" onclick="window.location.href='/dashboard'" title="Keluar">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </div>
-        <div class="page-title">ᴍᴀssᴀɢᴇ</div>
+        <div class="page-title">massage</div>
         <div class="user-info" style="display:none"><span id="myName">-</span><span id="myId">-</span></div>
         <div class="header-icons">
             <div class="icon-btn" onclick="toggleSearch()" title="Cari User">
@@ -100,7 +101,7 @@
     <div class="search-result" id="searchResult"></div>
 
     <div class="chat-container" id="chatContainer">
-        <div class="empty">sᴇᴀʀᴄʜ ʙʏ ɪᴅ ᴛᴏ sᴛᴀʀᴛ ᴄʜᴀᴛ</div>
+        <div class="empty">search ʙʏ ɪᴅ ᴛᴏ start chat</div>
     </div>
 
     <div class="chat-input">
@@ -112,7 +113,7 @@
 
     <div class="history-overlay" id="historyOverlay" onclick="closeHistory(event)">
         <div class="history-box" onclick="event.stopPropagation()">
-            <h3>ʜɪsᴛᴏʀʏ ᴄʜᴀᴛ</h3>
+            <h3>history chat</h3>
             <div id="historyList"></div>
         </div>
     </div>
@@ -120,15 +121,16 @@
     <div class="delete-overlay" id="deleteOverlay">
         <div class="delete-box">
             <div class="del-icon"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div>
-            <div class="del-title">ᴅᴇʟᴇᴛᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ</div>
+            <div class="del-title">delete this message</div>
             <div class="del-buttons">
-                <button class="del-cancel" onclick="closeDeletePopup()">ᴄᴀɴᴄᴇʟʟᴇᴅ</button>
-                <button class="del-confirm" id="confirmDeleteBtn">ᴅᴇʟᴇᴛᴇ</button>
+                <button class="del-cancel" onclick="closeDeletePopup()">cancelled</button>
+                <button class="del-confirm" id="confirmDeleteBtn">delete</button>
             </div>
         </div>
     </div>
 
     <script>
+        const TUNNEL_URL_SOURCE = 'https://raw.githubusercontent.com/Laxxye1/Aeternum-Voxaa/main/tunnel-url.txt';
         let API_BASE = localStorage.getItem('aeternum_api_base') || '';
         let currentUser = null;
         let chatPartner = null;
@@ -136,6 +138,19 @@
         let pendingDeleteRoomId = '';
         let lastMessageCount = 0;
         let notificationEnabled = false;
+
+        async function initApiBase() {
+            const manual = localStorage.getItem('aeternum_api_base');
+            if (manual) { API_BASE = manual; return; }
+            try {
+                const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
+                if (r.ok) {
+                    const text = (await r.text()).trim();
+                    if (text.startsWith('https://')) API_BASE = text;
+                }
+            } catch (e) {}
+        }
+        const apiBaseReady = initApiBase();
 
         if ('Notification' in window) {
             Notification.requestPermission().then(perm => { if (perm === 'granted') notificationEnabled = true; });
@@ -171,7 +186,7 @@
             if (!pendingDeleteRoomId) return;
             try {
                 await fetch(API_BASE + '/api/chat/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ roomId: pendingDeleteRoomId }) });
-                if (roomId === pendingDeleteRoomId) { chatPartner = null; roomId = ''; document.getElementById('chatContainer').innerHTML = '<div class="empty">sᴇᴀʀᴄʜ ʙʏ ɪᴅ ᴛᴏ sᴛᴀʀᴛ ᴄʜᴀᴛ</div>'; }
+                if (roomId === pendingDeleteRoomId) { chatPartner = null; roomId = ''; document.getElementById('chatContainer').innerHTML = '<div class="empty">search ʙʏ ɪᴅ ᴛᴏ start chat</div>'; }
                 closeDeletePopup(); loadChatHistory();
             } catch(e) {}
         }
@@ -182,7 +197,7 @@
                 const d = await r.json();
                 const chatHistory = d.history || [];
                 const list = document.getElementById('historyList');
-                if (chatHistory.length === 0) { list.innerHTML = '<div class="history-empty">ɴᴏ ʜɪsᴛᴏʀʏ ᴄʜᴀᴛ</div>'; }
+                if (chatHistory.length === 0) { list.innerHTML = '<div class="history-empty">ɴᴏ history chat</div>'; }
                 else {
                     list.innerHTML = chatHistory.map(h => {
                         const delRoomId = [currentUser.id, h.partnerId].sort().join('_');
@@ -202,20 +217,26 @@
 
         async function searchUser() {
             const id = document.getElementById('searchInput').value.trim(); if (!id) return;
-            const r = await fetch(API_BASE + '/api/user/' + id); const d = await r.json();
             const result = document.getElementById('searchResult');
-            if (d.success) {
-                chatPartner = d.user; result.className = 'search-result found';
-                result.textContent = 'Name ' + d.user.name + ' | ID ' + d.user.id;
-                roomId = [currentUser.id, chatPartner.id].sort().join('_'); lastMessageCount = 0; loadChat();
-            } else { result.className = 'search-result notfound'; result.textContent = 'User tidak ditemukan'; }
+            try {
+                await apiBaseReady;
+                if (!API_BASE) { result.className = 'search-result notfound'; result.textContent = 'Server tidak terhubung'; return; }
+                const r = await fetch(API_BASE + '/api/user/' + id); const d = await r.json();
+                if (d.success) {
+                    chatPartner = d.user; result.className = 'search-result found';
+                    result.textContent = 'Name ' + d.user.name + ' | ID ' + d.user.id;
+                    roomId = [currentUser.id, chatPartner.id].sort().join('_'); lastMessageCount = 0; loadChat();
+                } else { result.className = 'search-result notfound'; result.textContent = 'User tidak ditemukan'; }
+            } catch (e) {
+                result.className = 'search-result notfound'; result.textContent = 'Gagal terhubung ke server';
+            }
         }
 
         async function loadChat() {
             const r = await fetch(API_BASE + '/api/chat/' + roomId); const d = await r.json();
             const container = document.getElementById('chatContainer');
             const messages = d.messages || [];
-            if (messages.length === 0) { container.innerHTML = '<div class="empty">ɴᴇᴡ ᴄʜᴀᴛ</div>'; return; }
+            if (messages.length === 0) { container.innerHTML = '<div class="empty">new chat</div>'; return; }
             container.innerHTML = messages.map(m => {
                 const isMe = m.senderId === currentUser.id;
                 return `<div class="chat-bubble ${isMe?'me':'other'}">
