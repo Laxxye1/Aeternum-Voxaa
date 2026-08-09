@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aeternum Voxaa - AI</title>
     <style>
+        @font-face { font-family: 'TeutonNormal'; src: url('/fonts/TeutonNormal.otf') format('opentype'); font-display: swap; }
         :root { --biru: #0F52BA; --bg: #f0f4f8; --abu: #999; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'TeutonNormal', sans-serif; }
         html, body { height: 100%; }
-        body { background: var(--bg); font-family: sans-serif; display: flex; flex-direction: column; }
+        body { background: var(--bg); display: flex; flex-direction: column; }
         .topbar { background: var(--biru); padding: 16px; color: #fff; display: flex; align-items: center; gap: 12px; }
         .topbar-icon-btn { width: 32px; height: 32px; background: none; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; border-radius: 8px; }
         .topbar-icon-btn:active { background: rgba(255,255,255,0.1); }
@@ -101,7 +102,7 @@
 <body>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
-        <h3>ᴀᴇᴛᴇʀɴᴜᴍ ᴠᴏxᴀᴀ</h3>
+        <h3>aeternum voxaa</h3>
         <button onclick="window.location.href='/dashboard'">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Dashboard
         </button>
@@ -123,7 +124,7 @@
         <button class="topbar-icon-btn" onclick="toggleSidebar()">
             <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
         </button>
-        <h1>ᴀᴇᴛᴇʀɴᴜᴍ ᴀɪ</h1>
+        <h1>aeternum ᴀɪ</h1>
         <div class="topbar-right">
             <button class="topbar-icon-btn" onclick="window.location.href='/dashboard'" title="Keluar">
                 <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -133,7 +134,7 @@
             </button>
             <div class="dropdown-menu" id="dropdownMenu">
                 <button onclick="clearChat()">
-                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> ʜᴀᴘᴜs ᴏʙʀᴏʟᴀɴ
+                    <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> hapus obrolan
                 </button>
             </div>
         </div>
@@ -141,7 +142,7 @@
 
     <div class="chat-area" id="chatArea">
         <div class="empty-state" id="emptyState">
-            <div>ᴍᴜʟᴀɪ ᴏʙʀᴏʟᴀɴ ᴅᴇɴɢᴀɴ ᴀɪ</div>
+            <div>mulai obrolan dengan ᴀɪ</div>
         </div>
     </div>
 
@@ -155,17 +156,17 @@
             <div class="attach-menu" id="attachMenu">
                 <button onclick="document.getElementById('imageInput').click(); closeAttachMenu();">
                     <svg viewBox="0 0 24 24"><path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h16v9.17l-3.59-3.58a1 1 0 00-1.41 0L11 15.59l-2.29-2.3a1 1 0 00-1.42 0L4 16.59V6zm4 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
-                    <span>ғᴏᴛᴏ</span>
+                    <span>foto</span>
                 </button>
                 <button onclick="document.getElementById('fileInput').click(); closeAttachMenu();">
                     <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
-                    <span>ғɪʟᴇ</span>
+                    <span>file</span>
                 </button>
             </div>
         </div>
         <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
         <input type="file" id="fileInput" accept=".txt,.md,.json,.js,.jsx,.ts,.tsx,.html,.htm,.css,.scss,.py,.java,.c,.cpp,.h,.cs,.php,.rb,.go,.rs,.swift,.kt,.sql,.sh,.yml,.yaml,.xml,.csv,.log,.ini,.env,.pdf,.doc,.docx" style="display:none" onchange="handleFileSelect(event)">
-        <textarea id="msgInput" rows="1" placeholder="ᴋᴇᴛɪᴋ ᴘᴇsᴀɴ..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+        <textarea id="msgInput" rows="1" placeholder="ketik pesan..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
         <button class="send-btn" onclick="sendMessage()">
             <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
@@ -221,7 +222,7 @@
         function renderChatHistoryList() {
             const list = document.getElementById('chatHistoryList');
             const chats = loadAllChats();
-            if (!chats.length) { list.innerHTML = '<div class="chat-history-empty">ʙᴇʟᴜᴍ ᴀᴅᴀ ʀɪᴡᴀʏᴀᴛ</div>'; return; }
+            if (!chats.length) { list.innerHTML = '<div class="chat-history-empty">belum ada riwayat</div>'; return; }
             list.innerHTML = chats.map(c => `
                 <div class="chat-history-item ${c.id === currentChatId ? 'active' : ''}" onclick="openChat('${c.id}')">
                     <span class="title">${escapeHtml(c.title || 'Obrolan')}</span>
@@ -244,7 +245,7 @@
                 if (m.role === 'user') appendMessage('user', m.content);
                 else if (m.role === 'assistant') appendMessage('ai', m.content);
             });
-            if (!history.length) area.innerHTML = '<div class="empty-state" id="emptyState"><div>ᴍᴜʟᴀɪ ᴏʙʀᴏʟᴀɴ ᴅᴇɴɢᴀɴ ᴀɪ</div></div>';
+            if (!history.length) area.innerHTML = '<div class="empty-state" id="emptyState"><div>mulai obrolan dengan ᴀɪ</div></div>';
             document.getElementById('sidebar').classList.remove('active');
             document.getElementById('sidebarOverlay').classList.remove('active');
             renderChatHistoryList();
@@ -259,7 +260,7 @@
             currentChatId = 'chat_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
             history = [];
             lastUserPayload = null;
-            document.getElementById('chatArea').innerHTML = '<div class="empty-state" id="emptyState"><div>ᴍᴜʟᴀɪ ᴏʙʀᴏʟᴀɴ ᴅᴇɴɢᴀɴ ᴀɪ</div></div>';
+            document.getElementById('chatArea').innerHTML = '<div class="empty-state" id="emptyState"><div>mulai obrolan dengan ᴀɪ</div></div>';
             document.getElementById('sidebar').classList.remove('active');
             document.getElementById('sidebarOverlay').classList.remove('active');
             renderChatHistoryList();
@@ -314,7 +315,7 @@
                     bar.style.display = 'flex';
                     bar.innerHTML = `<img src="${pendingImage}"><div class="remove" onclick="clearAttachment()">×</div>`;
                 };
-                reader.onerror = () => { showAttachError('ɢᴀɢᴀʟ ᴍᴇᴍʙᴀᴄᴀ ɢᴀᴍʙᴀʀ'); };
+                reader.onerror = () => { showAttachError('gagal membaca gambar'); };
                 reader.readAsDataURL(file);
             } else if (isTextDoc) {
                 const reader = new FileReader();
@@ -325,12 +326,12 @@
                     bar.style.display = 'flex';
                     bar.innerHTML = `<div class="doc-chip">${escapeHtml(file.name)}</div><div class="remove" onclick="clearAttachment()">×</div>`;
                 };
-                reader.onerror = () => { showAttachError('ɢᴀɢᴀʟ ᴍᴇᴍʙᴀᴄᴀ ᴅᴏᴋᴜᴍᴇɴ'); };
+                reader.onerror = () => { showAttachError('gagal membaca dokumen'); };
                 reader.readAsText(file);
             } else if (isUnsupportedBinary) {
-                showAttachError('ғᴏʀᴍᴀᴛ ' + lowerName.split('.').pop().toUpperCase() + ' ʙᴇʟᴜᴍ ʙɪsᴀ ᴅɪʙᴀᴄᴀ ɪsɪɴʏᴀ, ɢᴜɴᴀᴋᴀɴ ғɪʟᴇ ᴛᴇᴋs ᴀᴛᴀᴜ ɢᴀᴍʙᴀʀ');
+                showAttachError('format ' + lowerName.split('.').pop().toUpperCase() + ' belum bisa dibaca isinya, gunakan file teks atau gambar');
             } else {
-                showAttachError('ᴛɪᴘᴇ ғɪʟᴇ ɪɴɪ ʙᴇʟᴜᴍ ᴅɪᴅᴜᴋᴜɴɢ');
+                showAttachError('tipe file ini belum didukung');
             }
             e.target.value = '';
         }
@@ -404,7 +405,7 @@
         function copyText(text, btn) {
             navigator.clipboard.writeText(text).then(() => {
                 const original = btn.innerHTML;
-                btn.innerHTML = 'ᴅɪsᴀʟɪɴ';
+                btn.innerHTML = 'disalin';
                 setTimeout(() => { btn.innerHTML = original; }, 1500);
             }).catch(() => {});
         }
@@ -435,10 +436,10 @@
             const actions = document.createElement('div');
             actions.className = 'msg-actions';
             const copyBtn = document.createElement('button');
-            copyBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> ᴄᴏᴘʏ';
+            copyBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> copy';
             copyBtn.onclick = () => copyText(text, copyBtn);
             const regenBtn = document.createElement('button');
-            regenBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L14 11h7V4l-3.35 2.35z"/></svg> ᴜʟᴀɴɢɪ';
+            regenBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L14 11h7V4l-3.35 2.35z"/></svg> ulangi';
             regenBtn.onclick = () => regenerate();
             actions.appendChild(copyBtn);
             actions.appendChild(regenBtn);
@@ -543,7 +544,7 @@
                 await requestAI();
             } catch (e) {
                 hideTyping();
-                appendMessage('ai error', 'ᴛᴇʀᴊᴀᴅɪ ᴋᴇsᴀʟᴀʜᴀɴ, ᴄᴏʙᴀ ʟᴀɢɪ');
+                appendMessage('ai error', 'terjadi kesalahan, coba lagi');
             }
         }
 
@@ -556,16 +557,16 @@
         async function requestAI() {
             try {
                 const hasDoc = lastUserPayload.message && lastUserPayload.message.includes('[Isi dokumen');
-                showTyping(hasDoc ? '...ᴍᴇᴍʙᴀᴄᴀ ᴅᴏᴋᴜᴍᴇɴ' : '...ʙᴇʀᴘɪᴋɪʀ');
+                showTyping(hasDoc ? '...membaca dokumen' : '...berpikir');
                 await apiBaseReady;
-                if (!API_BASE) { hideTyping(); appendMessage('ai error', 'sᴇʀᴠᴇʀ ᴛɪᴅᴀᴋ ᴛᴇʀʜᴜʙᴜɴɢ'); return; }
+                if (!API_BASE) { hideTyping(); appendMessage('ai error', 'server tidak terhubung'); return; }
                 const r = await fetch(API_BASE + '/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: lastUserPayload.message, image: lastUserPayload.image, history: history.slice(0, -1) })
                 });
                 const d = await r.json();
-                if (d.success && d.download) showTyping('...ᴍᴇᴍʙᴜᴀᴛ ғɪʟᴇ');
+                if (d.success && d.download) showTyping('...membuat file');
                 hideTyping();
                 if (d.error) {
                     appendMessage('ai error', d.error);
@@ -577,7 +578,7 @@
                 }
             } catch (e) {
                 hideTyping();
-                appendMessage('ai error', 'ɢᴀɢᴀʟ ᴛᴇʀʜᴜʙᴜɴɢ ᴋᴇ sᴇʀᴠᴇʀ');
+                appendMessage('ai error', 'gagal terhubung ᴋᴇ server');
             }
         }
 
