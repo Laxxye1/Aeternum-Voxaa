@@ -49,6 +49,7 @@
             <button class="btn btn-secondary" onclick="testConnection()">ᴛᴇsᴛ ᴋᴏɴᴇᴋsɪ</button>
             <button class="btn btn-primary" onclick="saveApiBase()">sɪᴍᴘᴀɴ</button>
         </div>
+        <button class="btn" style="width:100%;margin-top:8px;background:#fdeaea;color:#c0392b" onclick="resetToAuto()">ʀᴇsᴇᴛ ᴋᴇ ᴏᴛᴏᴍᴀᴛɪs (ʜᴀᴘᴜs ᴀʟᴀᴍᴀᴛ ᴍᴀɴᴜᴀʟ)</button>
 
         <div class="status" id="statusBox"></div>
 
@@ -120,6 +121,29 @@
             if (!url) { status.className = 'status fail'; status.textContent = 'ɪsɪ ᴀʟᴀᴍᴀᴛ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ'; return; }
             localStorage.setItem('aeternum_api_base', url);
             status.className = 'status ok'; status.textContent = 'ᴛᴇʀsɪᴍᴘᴀɴ, ʜᴀʟᴀᴍᴀɴ ʟᴀɪɴ ᴀᴋᴀɴ ᴍᴇɴɢɢᴜɴᴀᴋᴀɴ ᴀʟᴀᴍᴀᴛ ɪɴɪ';
+            loadCurrent();
+        }
+        async function resetToAuto() {
+            if (!accessGranted) return;
+            localStorage.removeItem('aeternum_api_base');
+            document.getElementById('apiBaseInput').value = '';
+            const status = document.getElementById('statusBox');
+            status.className = 'status loading'; status.textContent = 'ᴍᴇɴɢᴀᴍʙɪʟ ᴀʟᴀᴍᴀᴛ ᴏᴛᴏᴍᴀᴛɪs ᴅᴀʀɪ ᴛᴜɴɴᴇʟ...';
+            try {
+                const r = await fetch('https://raw.githubusercontent.com/Laxxye1/Aeternum-Voxaa/main/tunnel-url.txt?t=' + Date.now());
+                if (r.ok) {
+                    const text = (await r.text()).trim();
+                    if (text.startsWith('https://')) {
+                        status.className = 'status ok'; status.textContent = 'ʙᴇʀʜᴀsɪʟ, ᴀʟᴀᴍᴀᴛ ᴏᴛᴏᴍᴀᴛɪs: ' + text;
+                        loadCurrent();
+                        loadBackups();
+                        return;
+                    }
+                }
+                status.className = 'status fail'; status.textContent = 'ʙᴇʟᴜᴍ ᴀᴅᴀ ᴀʟᴀᴍᴀᴛ ᴏᴛᴏᴍᴀᴛɪs ᴅɪ ɢɪᴛʜᴜʙ, ᴄᴇᴋ sᴇʀᴠᴇʀ';
+            } catch (e) {
+                status.className = 'status fail'; status.textContent = 'ɢᴀɢᴀʟ ᴍᴇɴɢᴀᴍʙɪʟ ᴀʟᴀᴍᴀᴛ ᴏᴛᴏᴍᴀᴛɪs';
+            }
             loadCurrent();
         }
         function formatSize(bytes) {
