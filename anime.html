@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aeternum Voxaa - Anime</title>
     <style>
-        @font-face { font-family: 'TeutonNormal'; src: url('/fonts/TeutonNormal.otf') format('opentype'); font-display: swap; }
+        @font-face { font-family: 'TeutonNormal'; src: url('/TeutonNormal.otf') format('opentype'); font-display: swap; }
         :root { --biru: #0F52BA; --bg: #f0f4f8; --putih: #fff; --abu: #999; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'TeutonNormal', sans-serif; }
         body { background: var(--bg); padding-bottom: 40px; }
@@ -46,20 +46,20 @@
 </head>
 <body>
     <div class="topbar">
-        <h1>anime catalog</h1>
+        <h1>ᴀɴɪᴍᴇ ᴄᴀᴛᴀʟᴏɢ</h1>
         <button class="home-btn" onclick="window.location.href='/dashboard'" title="Keluar">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </button>
     </div>
 
     <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="cari judul anime..." onkeydown="if(event.key==='Enter')searchAnime()">
-        <button onclick="searchAnime()">cari</button>
+        <input type="text" id="searchInput" placeholder="ᴄᴀʀɪ ᴊᴜᴅᴜʟ ᴀɴɪᴍᴇ..." onkeydown="if(event.key==='Enter')searchAnime()">
+        <button onclick="searchAnime()">ᴄᴀʀɪ</button>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" id="tabTop" onclick="loadTop()">populer</button>
-        <button class="tab-btn" id="tabSeason" onclick="loadSeasonal()">musim ini</button>
+        <button class="tab-btn active" id="tabTop" onclick="loadTop()">ᴘᴏᴘᴜʟᴇʀ</button>
+        <button class="tab-btn" id="tabSeason" onclick="loadSeasonal()">ᴍᴜsɪᴍ ɪɴɪ</button>
     </div>
 
     <div id="grid" class="grid"></div>
@@ -86,34 +86,34 @@
         async function loadTop() {
             setActiveTab('tabTop');
             const grid = document.getElementById('grid');
-            grid.innerHTML = '<div class="loading">memuat...</div>';
+            grid.innerHTML = '<div class="loading">ᴍᴇᴍᴜᴀᴛ...</div>';
             try {
                 await apiBaseReady;
                 const r = await fetch(API_BASE + '/api/anime/top'); const d = await r.json();
                 renderGrid(d);
-            } catch (e) { grid.innerHTML = '<div class="empty">gagal memuat data</div>'; }
+            } catch (e) { grid.innerHTML = '<div class="empty">ɢᴀɢᴀʟ ᴍᴇᴍᴜᴀᴛ ᴅᴀᴛᴀ</div>'; }
         }
         async function loadSeasonal() {
             setActiveTab('tabSeason');
             const grid = document.getElementById('grid');
-            grid.innerHTML = '<div class="loading">memuat...</div>';
+            grid.innerHTML = '<div class="loading">ᴍᴇᴍᴜᴀᴛ...</div>';
             try {
                 await apiBaseReady;
                 const r = await fetch(API_BASE + '/api/anime/seasonal'); const d = await r.json();
                 renderGrid(d);
-            } catch (e) { grid.innerHTML = '<div class="empty">gagal memuat data</div>'; }
+            } catch (e) { grid.innerHTML = '<div class="empty">ɢᴀɢᴀʟ ᴍᴇᴍᴜᴀᴛ ᴅᴀᴛᴀ</div>'; }
         }
         async function searchAnime() {
             const q = document.getElementById('searchInput').value.trim();
             if (!q) return;
             setActiveTab(null);
             const grid = document.getElementById('grid');
-            grid.innerHTML = '<div class="loading">mencari...</div>';
+            grid.innerHTML = '<div class="loading">ᴍᴇɴᴄᴀʀɪ...</div>';
             try {
                 await apiBaseReady;
                 const r = await fetch(API_BASE + '/api/anime/search?q=' + encodeURIComponent(q)); const d = await r.json();
                 renderGrid(d);
-            } catch (e) { grid.innerHTML = '<div class="empty">gagal mencari</div>'; }
+            } catch (e) { grid.innerHTML = '<div class="empty">ɢᴀɢᴀʟ ᴍᴇɴᴄᴀʀɪ</div>'; }
         }
         function setActiveTab(id) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -123,7 +123,7 @@
         function renderGrid(d) {
             const grid = document.getElementById('grid');
             if (d.error) { grid.innerHTML = `<div class="empty">${d.error}</div>`; return; }
-            if (!d.results || !d.results.length) { grid.innerHTML = '<div class="empty">tidak ada hasil</div>'; return; }
+            if (!d.results || !d.results.length) { grid.innerHTML = '<div class="empty">ᴛɪᴅᴀᴋ ᴀᴅᴀ ʜᴀsɪʟ</div>'; return; }
             currentResults = d.results;
             grid.innerHTML = d.results.map((a, i) => `
                 <div class="card" onclick="showDetail(${i})">
@@ -145,9 +145,9 @@
                     <h2>${escapeHtml(a.title)}</h2>
                     <div class="tags">${(a.genres || []).map(g => `<span class="tag">${escapeHtml(g)}</span>`).join('')}</div>
                     <div class="stat-row">
-                        <div class="stat"><div class="val">★ ${a.score || '-'}</div><div class="lbl">rating</div></div>
-                        <div class="stat"><div class="val">${a.episodes || '-'}</div><div class="lbl">episode</div></div>
-                        <div class="stat"><div class="val">${a.status ? a.status.split(' ')[0] : '-'}</div><div class="lbl">status</div></div>
+                        <div class="stat"><div class="val">★ ${a.score || '-'}</div><div class="lbl">ʀᴀᴛɪɴɢ</div></div>
+                        <div class="stat"><div class="val">${a.episodes || '-'}</div><div class="lbl">ᴇᴘɪsᴏᴅᴇ</div></div>
+                        <div class="stat"><div class="val">${a.status ? a.status.split(' ')[0] : '-'}</div><div class="lbl">sᴛᴀᴛᴜs</div></div>
                     </div>
                     <div class="synopsis">${escapeHtml((a.synopsis || 'Sinopsis tidak tersedia.').slice(0, 400))}${a.synopsis && a.synopsis.length > 400 ? '...' : ''}</div>
                     <a class="legal-btn" href="${a.url}" target="_blank">info lengkap ᴅɪ myanimelist</a>
