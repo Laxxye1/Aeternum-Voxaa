@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aeternum Voxaa - Massage</title>
     <style>
-        @font-face { font-family: 'TeutonNormal'; src: url('/fonts/TeutonNormal.otf') format('opentype'); font-display: swap; }
+        @font-face { font-family: 'TeutonNormal'; src: url('/TeutonNormal.otf') format('opentype'); font-display: swap; }
         :root { --biru: #0F52BA; --bg: #f0f4f8; --putih: #fff; --abu: #999; --merah: #ff5252; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'TeutonNormal', sans-serif; }
         body { background: var(--bg); height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
@@ -82,7 +82,7 @@
         <div class="icon-btn plain" onclick="window.location.href='/dashboard'" title="Keluar">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </div>
-        <div class="page-title">massage</div>
+        <div class="page-title">ᴍᴀssᴀɢᴇ</div>
         <div class="user-info" style="display:none"><span id="myName">-</span><span id="myId">-</span></div>
         <div class="header-icons">
             <div class="icon-btn" onclick="toggleSearch()" title="Cari User">
@@ -95,8 +95,8 @@
     </div>
 
     <div class="search-bar" id="searchBar">
-        <input type="text" id="searchInput" placeholder="Masukkan ID" onkeydown="if(event.key==='Enter')searchUser()">
-        <button onclick="searchUser()">Cari</button>
+        <input type="text" id="searchInput" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ɪᴅ" onkeydown="if(event.key==='Enter')searchUser()">
+        <button onclick="searchUser()">ᴄᴀʀɪ</button>
     </div>
     <div class="search-result" id="searchResult"></div>
 
@@ -105,7 +105,7 @@
     </div>
 
     <div class="chat-input">
-        <input type="text" id="chatInput" placeholder="Send Massage..." onkeydown="if(event.key==='Enter')sendMessage()">
+        <input type="text" id="chatInput" placeholder="sᴇɴᴅ ᴍᴀssᴀɢᴇ..." onkeydown="if(event.key==='Enter')sendMessage()">
         <button class="send-btn" onclick="sendMessage()" title="Kirim">
             <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
@@ -113,7 +113,7 @@
 
     <div class="history-overlay" id="historyOverlay" onclick="closeHistory(event)">
         <div class="history-box" onclick="event.stopPropagation()">
-            <h3>history chat</h3>
+            <h3>ʜɪsᴛᴏʀʏ ᴄʜᴀᴛ</h3>
             <div id="historyList"></div>
         </div>
     </div>
@@ -121,10 +121,10 @@
     <div class="delete-overlay" id="deleteOverlay">
         <div class="delete-box">
             <div class="del-icon"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></div>
-            <div class="del-title">delete this message</div>
+            <div class="del-title">ᴅᴇʟᴇᴛᴇ ᴛʜɪs ᴍᴇssᴀɢᴇ</div>
             <div class="del-buttons">
-                <button class="del-cancel" onclick="closeDeletePopup()">cancelled</button>
-                <button class="del-confirm" id="confirmDeleteBtn">delete</button>
+                <button class="del-cancel" onclick="closeDeletePopup()">ᴄᴀɴᴄᴇʟʟᴇᴅ</button>
+                <button class="del-confirm" id="confirmDeleteBtn">ᴅᴇʟᴇᴛᴇ</button>
             </div>
         </div>
     </div>
@@ -236,7 +236,7 @@
             const r = await fetch(API_BASE + '/api/chat/' + roomId); const d = await r.json();
             const container = document.getElementById('chatContainer');
             const messages = d.messages || [];
-            if (messages.length === 0) { container.innerHTML = '<div class="empty">new chat</div>'; return; }
+            if (messages.length === 0) { container.innerHTML = '<div class="empty">ɴᴇᴡ ᴄʜᴀᴛ</div>'; return; }
             container.innerHTML = messages.map(m => {
                 const isMe = m.senderId === currentUser.id;
                 return `<div class="chat-bubble ${isMe?'me':'other'}">
