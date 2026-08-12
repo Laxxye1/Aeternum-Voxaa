@@ -182,8 +182,6 @@
         let lastUserPayload = null;
 
         async function initApiBase() {
-            const manual = localStorage.getItem('aeternum_api_base');
-            if (manual) { API_BASE = manual; return; }
             try {
                 const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
                 if (r.ok) {
@@ -211,7 +209,7 @@
             if (!currentChatId || history.length === 0) return;
             let chats = loadAllChats();
             const firstUserMsg = history.find(h => h.role === 'user');
-            const title = firstUserMsg ? String(firstUserMsg.content).slice(0, 40) : 'Obrolan';
+            const title = firstUserMsg ? String(firstUserMsg.content).slice(0, 40) : 'ᴏʙʀᴏʟᴀɴ';
             const idx = chats.findIndex(c => c.id === currentChatId);
             const chatData = { id: currentChatId, title, messages: history, updatedAt: Date.now() };
             if (idx >= 0) chats[idx] = chatData; else chats.unshift(chatData);
@@ -225,7 +223,7 @@
             if (!chats.length) { list.innerHTML = '<div class="chat-history-empty">ʙᴇʟᴜᴍ ᴀᴅᴀ ʀɪᴡᴀʏᴀᴛ</div>'; return; }
             list.innerHTML = chats.map(c => `
                 <div class="chat-history-item ${c.id === currentChatId ? 'active' : ''}" onclick="openChat('${c.id}')">
-                    <span class="title">${escapeHtml(c.title || 'Obrolan')}</span>
+                    <span class="title">${escapeHtml(c.title || 'ᴏʙʀᴏʟᴀɴ')}</span>
                     <span class="del-btn" onclick="event.stopPropagation(); deleteChat('${c.id}')">
                         <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
                     </span>
@@ -315,7 +313,7 @@
                     bar.style.display = 'flex';
                     bar.innerHTML = `<img src="${pendingImage}"><div class="remove" onclick="clearAttachment()">×</div>`;
                 };
-                reader.onerror = () => { showAttachError('gagal membaca gambar'); };
+                reader.onerror = () => { showAttachError('ɢᴀɢᴀʟ ᴍᴇᴍʙᴀᴄᴀ ɢᴀᴍʙᴀʀ'); };
                 reader.readAsDataURL(file);
             } else if (isTextDoc) {
                 const reader = new FileReader();
@@ -329,9 +327,9 @@
                 reader.onerror = () => { showAttachError('ɢᴀɢᴀʟ ᴍᴇᴍʙᴀᴄᴀ ᴅᴏᴋᴜᴍᴇɴ'); };
                 reader.readAsText(file);
             } else if (isUnsupportedBinary) {
-                showAttachError('format ' + lowerName.split('.').pop().toUpperCase() + ' belum bisa dibaca isinya, gunakan file teks atau gambar');
+                showAttachError('ғᴏʀᴍᴀᴛ ' + lowerName.split('.').pop().toUpperCase() + ' ʙᴇʟᴜᴍ ʙɪsᴀ ᴅɪʙᴀᴄᴀ ɪsɪɴʏᴀ, ɢᴜɴᴀᴋᴀɴ ғɪʟᴇ ᴛᴇᴋs ᴀᴛᴀᴜ ɢᴀᴍʙᴀʀ');
             } else {
-                showAttachError('tipe file ini belum didukung');
+                showAttachError('ᴛɪᴘᴇ ғɪʟᴇ ɪɴɪ ʙᴇʟᴜᴍ ᴅɪᴅᴜᴋᴜɴɢ');
             }
             e.target.value = '';
         }
@@ -419,7 +417,7 @@
                 </div>
                 <div class="file-card-info">
                     <div class="file-card-name">${escapeHtml(download.fileName || 'file')}</div>
-                    <div class="file-card-type">${download.isZip ? 'ZIP Archive' : 'File'}</div>
+                    <div class="file-card-type">${download.isZip ? 'ᴢɪᴘ ᴀʀᴄʜɪᴠᴇ' : 'ғɪʟᴇ'}</div>
                 </div>
                 <div class="file-card-dl">
                     <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
