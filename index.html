@@ -92,14 +92,14 @@
     </div>
     <div class="user-info" id="userInfo">
         Name <span id="userName">-</span><br>
-        ID <span id="userId">-</span><br>
-        Role <span id="userRole">-</span>
+        ɪᴅ <span id="userId">-</span><br>
+        ʀᴏʟᴇ <span id="userRole">-</span>
     </div>
     <div class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></div>
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     
     <div class="sidebar" id="sidebar">
-        <h3>aeternum voxaa</h3>
+        <h3>ᴀᴇᴛᴇʀɴᴜᴍ ᴠᴏxᴀᴀ</h3>
         <div id="ownerPanel" style="display:none">
             <input type="text" id="commandInput" placeholder="" onkeydown="if(event.key==='Enter')prosesCommand()">
             <div class="result" id="commandResult"></div>
@@ -107,12 +107,12 @@
         <div class="section-title">sᴛᴀᴛᴜs ᴘʟᴀᴛғʀᴏᴍ</div>
         <div class="status" id="statusList"></div>
         <div class="sidebar-spacer"></div>
-        <button class="logout-btn" onclick="logout()">Logout</button>
+        <button class="logout-btn" onclick="logout()">ʟᴏɢᴏᴜᴛ</button>
     </div>
     
     <div class="garis"></div>
     <div class="info">
-        browser <span id="ib">...</span> &nbsp; batre <span id="ibat">...</span><br>
+        ʙʀᴏᴡsᴇʀ <span id="ib">...</span> &nbsp; ʙᴀᴛʀᴇ <span id="ibat">...</span><br>
         device <span id="id">...</span> &nbsp; status <span id="is">...</span>
     </div>
 
@@ -137,10 +137,10 @@
 
     <div class="popup-overlay" id="authPopup">
         <div class="popup-box">
-            <h2 id="authTitle">Pendaftaran</h2>
+            <h2 id="authTitle">ᴘᴇɴᴅᴀғᴛᴀʀᴀɴ</h2>
             <input type="text" id="authName" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ɴᴀᴍᴇ">
             <input type="password" id="authPass" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ᴘᴀssᴡᴏʀᴅ">
-            <button id="authBtn" onclick="handleAuth()">Daftar</button>
+            <button id="authBtn" onclick="handleAuth()">ᴅᴀғᴛᴀʀ</button>
             <button class="link-btn" id="authSwitch" onclick="switchAuth()">sᴜᴅᴀʜ ᴘᴜɴʏᴀ ᴀᴋᴜɴ? ʟᴏɢɪɴ!</button>
             <div class="msg" id="authMsg"></div>
         </div>
@@ -164,8 +164,6 @@
         let kategori = { populer: ["tiktok"], terbaru: ["youtube", "massage", "removebg"], lain: ["instagram", "mp3"] };
 
         async function initApiBase() {
-            const manual = localStorage.getItem('aeternum_api_base');
-            if (manual) { API_BASE = manual; return; }
             try {
                 const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
                 if (r.ok) {
@@ -306,9 +304,9 @@
         }
 
         function updateUIForUser() {
-            const roleText = currentUser.role === 'owner' ? 'developer' : 'member free';
+            const roleText = currentUser.role === 'owner' ? 'ᴅᴇᴠᴇʟᴏᴘᴇʀ' : 'ᴍᴇᴍʙᴇʀ ғʀᴇᴇ';
             document.getElementById('userInfo').style.display = 'block';
-            document.getElementById('userInfo').innerHTML = 'Name <span style="color:#b3d9ff">' + currentUser.name + '</span><br>ID <span style="color:#b3d9ff">' + currentUser.id + '</span><br>Role <span style="color:#ffffff">' + roleText + '</span>';
+            document.getElementById('userInfo').innerHTML = 'ɴᴀᴍᴇ <span style="color:#b3d9ff">' + currentUser.name + '</span><br>ɪᴅ <span style="color:#b3d9ff">' + currentUser.id + '</span><br>ʀᴏʟᴇ <span style="color:#ffffff">' + roleText + '</span>';
             const h = document.getElementById('hamburgerBtn');
             h.style.display = 'flex'; h.onclick = toggleSidebar;
             document.getElementById('ownerPanel').style.display = currentUser.role === 'owner' ? 'block' : 'none';
@@ -407,7 +405,7 @@
             }
             cp = p;
             document.getElementById('popupLogo').innerHTML = logos[p];
-            document.getElementById('popupContent').innerHTML = `<input type="text" id="linkInput" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ʟɪɴᴋ..."><button onclick="download()">Download</button><div class="spinner" id="spinner"></div><div id="ʜᴀsɪʟ"></div>`;
+            document.getElementById('popupContent').innerHTML = `<input type="text" id="linkInput" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ʟɪɴᴋ..."><button onclick="download()">ᴅᴏᴡɴʟᴏᴀᴅ</button><div class="spinner" id="spinner"></div><div id="ʜᴀsɪʟ"></div>`;
             document.getElementById('downloadPopup').classList.add('active');
             setTimeout(() => { const inp = document.getElementById('linkInput'); if(inp) inp.focus(); }, 300);
         }
@@ -423,9 +421,9 @@
                 let api=cp==='tiktok'?API_BASE+'/api/tiktok?url=':cp==='instagram'?API_BASE+'/api/instagram?url=':cp==='youtube'?API_BASE+'/api/youtube?type=video&url=':API_BASE+'/api/mp3?url=';
                 const r=await fetch(api+encodeURIComponent(link));const d=await r.json();
                 if(d.error){hasil.innerHTML=`<p style="color:#888;padding:20px">ᴍᴇᴅɪᴀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ<br><span style="font-size:12px;opacity:.7">${d.error}</span></p>`;}
-                else if(cp==='tiktok'&&d.code===0&&d.data){const base=(d.filename||'TikTok_1.mp4').replace(/\.[^.]+$/,'');if(d.data.images)d.data.images.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">Picture ${i+1}</div><img src="${u}"><button class="download-btn" onclick="fd('${u}','${base}_${i+1}.jpg')">Download</button></div>`);else{const u=d.data.hdplay||d.data.play;hasil.innerHTML=`<div class="hasil-item"><div class="label">Video 1</div><video src="${u}" controls></video><button class="download-btn" onclick="fd('${u}','${d.filename||'TikTok_1.mp4'}')">Download</button></div>`;}}
-                else if(cp==='instagram'&&d.url){const base=(d.filename||'Instagram_1.mp4').replace(/\.[^.]+$/,'');d.url.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">${u.type==='video'?'Video':'Picture'} ${i+1}</div>${u.type==='video'?`<video src="${u.url}" controls></video>`:`<img src="${u.url}">`}<button class="download-btn" onclick="fd('${u.url}','${base}_${i+1}.${u.type==='video'?'mp4':'jpg'}')">Download</button></div>`);}
-                else if(d.success&&d.url){const ext=d.type==='audio'?'mp3':'mp4';const fn=d.filename||(('download')+'.'+ext);hasil.innerHTML=`<div class="hasil-item"><div class="label">${d.type==='audio'?'Audio':'Video'} 1</div>${d.type==='audio'?`<audio src="${d.url}" controls></audio>`:`<video src="${d.url}" controls></video>`}<button class="download-btn" onclick="fd('${d.url}','${fn}')">Download</button></div>`;}
+                else if(cp==='tiktok'&&d.code===0&&d.data){const base=(d.filename||'TikTok_1.mp4').replace(/\.[^.]+$/,'');if(d.data.images)d.data.images.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">ᴘɪᴄᴛᴜʀᴇ ${i+1}</div><img src="${u}"><button class="download-btn" onclick="fd('${u}','${base}_${i+1}.jpg')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`);else{const u=d.data.hdplay||d.data.play;hasil.innerHTML=`<div class="hasil-item"><div class="label">ᴠɪᴅᴇᴏ 1</div><video src="${u}" controls></video><button class="download-btn" onclick="fd('${u}','${d.filename||'TikTok_1.mp4'}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`;}}
+                else if(cp==='instagram'&&d.url){const base=(d.filename||'Instagram_1.mp4').replace(/\.[^.]+$/,'');d.url.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">${u.type==='video'?'ᴠɪᴅᴇᴏ':'ᴘɪᴄᴛᴜʀᴇ'} ${i+1}</div>${u.type==='video'?`<video src="${u.url}" controls></video>`:`<img src="${u.url}">`}<button class="download-btn" onclick="fd('${u.url}','${base}_${i+1}.${u.type==='video'?'mp4':'jpg'}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`);}
+                else if(d.success&&d.url){const ext=d.type==='audio'?'mp3':'mp4';const fn=d.filename||(('download')+'.'+ext);hasil.innerHTML=`<div class="hasil-item"><div class="label">${d.type==='audio'?'ᴀᴜᴅɪᴏ':'ᴠɪᴅᴇᴏ'} 1</div>${d.type==='audio'?`<audio src="${d.url}" controls></audio>`:`<video src="${d.url}" controls></video>`}<button class="download-btn" onclick="fd('${d.url}','${fn}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`;}
                 else{hasil.innerHTML='<p style="color:#888;padding:20px">ᴍᴇᴅɪᴀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ</p>';}
             }catch(e){hasil.innerHTML='<p style="color:#888;padding:20px">ᴍᴇᴅɪᴀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ</p>';}
             btn.disabled=false;spin.style.display='none';
@@ -448,7 +446,7 @@
                     });
                     const d = await r.json();
                     if (d.success) {
-                        hasil.innerHTML = `<div class="hasil-item"><div class="label">ʜᴀsɪʟ</div><img src="${d.image}"><button class="download-btn" onclick="fd('${d.image}','${d.filename||'HapusBackground_1.png'}')">Download</button></div>`;
+                        hasil.innerHTML = `<div class="hasil-item"><div class="label">ʜᴀsɪʟ</div><img src="${d.image}"><button class="download-btn" onclick="fd('${d.image}','${d.filename||'HapusBackground_1.png'}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`;
                     } else {
                         hasil.innerHTML = '<p style="color:#888;padding:20px">ɢᴀɢᴀʟ ᴍᴇɴɢʜᴀᴘᴜs ʙᴀᴄᴋɢʀᴏᴜɴᴅ</p>';
                     }
