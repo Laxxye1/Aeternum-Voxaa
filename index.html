@@ -104,7 +104,7 @@
             <input type="text" id="commandInput" placeholder="" onkeydown="if(event.key==='Enter')prosesCommand()">
             <div class="result" id="commandResult"></div>
         </div>
-        <div class="section-title">status platfrom</div>
+        <div class="section-title">sᴛᴀᴛᴜs ᴘʟᴀᴛғʀᴏᴍ</div>
         <div class="status" id="statusList"></div>
         <div class="sidebar-spacer"></div>
         <button class="logout-btn" onclick="logout()">Logout</button>
@@ -118,19 +118,19 @@
 
     <div class="kategori-container">
         <div class="kategori-box kategori-populer">
-            <div class="kategori-title">feature populer</div>
+            <div class="kategori-title">ғᴇᴀᴛᴜʀᴇ ᴘᴏᴘᴜʟᴇʀ</div>
             <div class="kategori-icons" id="populerIcons"></div>
         </div>
         <div class="kategori-box kategori-terbaru">
-            <div class="kategori-title">feature terbaru</div>
+            <div class="kategori-title">ғᴇᴀᴛᴜʀᴇ ᴛᴇʀʙᴀʀᴜ</div>
             <div class="kategori-icons" id="terbaruIcons"></div>
         </div>
         <div class="kategori-box kategori-lain">
-            <div class="kategori-title">feature</div>
+            <div class="kategori-title">ғᴇᴀᴛᴜʀᴇ</div>
             <div class="kategori-icons" id="lainIcons"></div>
         </div>
         <div class="kategori-box kategori-maintenance" id="maintenanceBox" style="display:none">
-            <div class="kategori-title">feature maintenance</div>
+            <div class="kategori-title">ғᴇᴀᴛᴜʀᴇ ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ</div>
             <div class="kategori-icons" id="maintenanceIcons"></div>
         </div>
     </div>
@@ -138,10 +138,10 @@
     <div class="popup-overlay" id="authPopup">
         <div class="popup-box">
             <h2 id="authTitle">Pendaftaran</h2>
-            <input type="text" id="authName" placeholder="Masukkan Name">
-            <input type="password" id="authPass" placeholder="Masukkan Password">
+            <input type="text" id="authName" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ɴᴀᴍᴇ">
+            <input type="password" id="authPass" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ᴘᴀssᴡᴏʀᴅ">
             <button id="authBtn" onclick="handleAuth()">Daftar</button>
-            <button class="link-btn" id="authSwitch" onclick="switchAuth()">sudah punya akun? login!</button>
+            <button class="link-btn" id="authSwitch" onclick="switchAuth()">sᴜᴅᴀʜ ᴘᴜɴʏᴀ ᴀᴋᴜɴ? ʟᴏɢɪɴ!</button>
             <div class="msg" id="authMsg"></div>
         </div>
     </div>
@@ -393,10 +393,10 @@
             if (p === 'removebg') {
                 document.getElementById('popupLogo').innerHTML = logos[p];
                 document.getElementById('popupContent').innerHTML = `
-                    <label class="file-label" for="fileInput">pilih gambar</label>
+                    <label class="file-label" for="fileInput">ᴘɪʟɪʜ ɢᴀᴍʙᴀʀ</label>
                     <input type="file" id="fileInput" accept="image/*" onchange="removeBgFromFile(event)">
                     <div class="spinner" id="spinner"></div>
-                    <div id="hasil"></div>
+                    <div id="ʜᴀsɪʟ"></div>
                 `;
                 document.getElementById('downloadPopup').classList.add('active'); return;
             }
@@ -407,7 +407,7 @@
             }
             cp = p;
             document.getElementById('popupLogo').innerHTML = logos[p];
-            document.getElementById('popupContent').innerHTML = `<input type="text" id="linkInput" placeholder="masukkan link..."><button onclick="download()">Download</button><div class="spinner" id="spinner"></div><div id="hasil"></div>`;
+            document.getElementById('popupContent').innerHTML = `<input type="text" id="linkInput" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ʟɪɴᴋ..."><button onclick="download()">Download</button><div class="spinner" id="spinner"></div><div id="ʜᴀsɪʟ"></div>`;
             document.getElementById('downloadPopup').classList.add('active');
             setTimeout(() => { const inp = document.getElementById('linkInput'); if(inp) inp.focus(); }, 300);
         }
@@ -422,12 +422,12 @@
             try{
                 let api=cp==='tiktok'?API_BASE+'/api/tiktok?url=':cp==='instagram'?API_BASE+'/api/instagram?url=':cp==='youtube'?API_BASE+'/api/youtube?type=video&url=':API_BASE+'/api/mp3?url=';
                 const r=await fetch(api+encodeURIComponent(link));const d=await r.json();
-                if(d.error){hasil.innerHTML=`<p style="color:#888;padding:20px">media tidak ditemukan<br><span style="font-size:12px;opacity:.7">${d.error}</span></p>`;}
+                if(d.error){hasil.innerHTML=`<p style="color:#888;padding:20px">ᴍᴇᴅɪᴀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ<br><span style="font-size:12px;opacity:.7">${d.error}</span></p>`;}
                 else if(cp==='tiktok'&&d.code===0&&d.data){const base=(d.filename||'TikTok_1.mp4').replace(/\.[^.]+$/,'');if(d.data.images)d.data.images.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">Picture ${i+1}</div><img src="${u}"><button class="download-btn" onclick="fd('${u}','${base}_${i+1}.jpg')">Download</button></div>`);else{const u=d.data.hdplay||d.data.play;hasil.innerHTML=`<div class="hasil-item"><div class="label">Video 1</div><video src="${u}" controls></video><button class="download-btn" onclick="fd('${u}','${d.filename||'TikTok_1.mp4'}')">Download</button></div>`;}}
                 else if(cp==='instagram'&&d.url){const base=(d.filename||'Instagram_1.mp4').replace(/\.[^.]+$/,'');d.url.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">${u.type==='video'?'Video':'Picture'} ${i+1}</div>${u.type==='video'?`<video src="${u.url}" controls></video>`:`<img src="${u.url}">`}<button class="download-btn" onclick="fd('${u.url}','${base}_${i+1}.${u.type==='video'?'mp4':'jpg'}')">Download</button></div>`);}
                 else if(d.success&&d.url){const ext=d.type==='audio'?'mp3':'mp4';const fn=d.filename||(('download')+'.'+ext);hasil.innerHTML=`<div class="hasil-item"><div class="label">${d.type==='audio'?'Audio':'Video'} 1</div>${d.type==='audio'?`<audio src="${d.url}" controls></audio>`:`<video src="${d.url}" controls></video>`}<button class="download-btn" onclick="fd('${d.url}','${fn}')">Download</button></div>`;}
-                else{hasil.innerHTML='<p style="color:#888;padding:20px">media tidak ditemukan</p>';}
-            }catch(e){hasil.innerHTML='<p style="color:#888;padding:20px">media tidak ditemukan</p>';}
+                else{hasil.innerHTML='<p style="color:#888;padding:20px">ᴍᴇᴅɪᴀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ</p>';}
+            }catch(e){hasil.innerHTML='<p style="color:#888;padding:20px">ᴍᴇᴅɪᴀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ</p>';}
             btn.disabled=false;spin.style.display='none';
         }
 
@@ -448,11 +448,11 @@
                     });
                     const d = await r.json();
                     if (d.success) {
-                        hasil.innerHTML = `<div class="hasil-item"><div class="label">hasil</div><img src="${d.image}"><button class="download-btn" onclick="fd('${d.image}','${d.filename||'HapusBackground_1.png'}')">Download</button></div>`;
+                        hasil.innerHTML = `<div class="hasil-item"><div class="label">ʜᴀsɪʟ</div><img src="${d.image}"><button class="download-btn" onclick="fd('${d.image}','${d.filename||'HapusBackground_1.png'}')">Download</button></div>`;
                     } else {
-                        hasil.innerHTML = '<p style="color:#888;padding:20px">gagal menghapus background</p>';
+                        hasil.innerHTML = '<p style="color:#888;padding:20px">ɢᴀɢᴀʟ ᴍᴇɴɢʜᴀᴘᴜs ʙᴀᴄᴋɢʀᴏᴜɴᴅ</p>';
                     }
-                } catch(e) { hasil.innerHTML = '<p style="color:#888;padding:20px">gagal menghapus background</p>'; }
+                } catch(e) { hasil.innerHTML = '<p style="color:#888;padding:20px">ɢᴀɢᴀʟ ᴍᴇɴɢʜᴀᴘᴜs ʙᴀᴄᴋɢʀᴏᴜɴᴅ</p>'; }
                 spin.style.display = 'none';
             };
             reader.readAsDataURL(file);
