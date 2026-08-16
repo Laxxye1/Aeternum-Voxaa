@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aeternum Voxaa - Anime</title>
     <style>
-        @font-face { font-family: 'TeutonNormal'; src: url('/TeutonNormal.otf') format('opentype'); font-display: swap; }
         :root { --biru: #0F52BA; --bg: #f0f4f8; --putih: #fff; --abu: #999; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'TeutonNormal', sans-serif; }
-        body { background: var(--bg); padding-bottom: 40px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); font-family: sans-serif; padding-bottom: 40px; }
         .topbar { background: var(--biru); padding: 16px; color: #fff; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         .home-btn { width: 32px; height: 32px; background: none; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; border-radius: 8px; }
         .home-btn:active { background: rgba(255,255,255,0.1); }
@@ -47,7 +46,7 @@
 <body>
     <div class="topbar">
         <h1>ᴀɴɪᴍᴇ ᴄᴀᴛᴀʟᴏɢ</h1>
-        <button class="home-btn" onclick="window.location.href='/dashboard'" title="Keluar">
+        <button class="home-btn" onclick="window.location.href='/dashboard'" title="ᴋᴇʟᴜᴀʀ">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </button>
     </div>
@@ -69,26 +68,12 @@
     </div>
 
     <script>
-        const TUNNEL_URL_SOURCE = 'https://raw.githubusercontent.com/Laxxye1/Aeternum-Voxaa/main/tunnel-url.txt';
         let API_BASE = localStorage.getItem('aeternum_api_base') || '';
-        async function initApiBase() {
-            const manual = localStorage.getItem('aeternum_api_base');
-            if (manual) { API_BASE = manual; return; }
-            try {
-                const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
-                if (r.ok) {
-                    const text = (await r.text()).trim();
-                    if (text.startsWith('https://')) API_BASE = text;
-                }
-            } catch (e) {}
-        }
-        const apiBaseReady = initApiBase();
         async function loadTop() {
             setActiveTab('tabTop');
             const grid = document.getElementById('grid');
             grid.innerHTML = '<div class="loading">ᴍᴇᴍᴜᴀᴛ...</div>';
             try {
-                await apiBaseReady;
                 const r = await fetch(API_BASE + '/api/anime/top'); const d = await r.json();
                 renderGrid(d);
             } catch (e) { grid.innerHTML = '<div class="empty">ɢᴀɢᴀʟ ᴍᴇᴍᴜᴀᴛ ᴅᴀᴛᴀ</div>'; }
@@ -98,7 +83,6 @@
             const grid = document.getElementById('grid');
             grid.innerHTML = '<div class="loading">ᴍᴇᴍᴜᴀᴛ...</div>';
             try {
-                await apiBaseReady;
                 const r = await fetch(API_BASE + '/api/anime/seasonal'); const d = await r.json();
                 renderGrid(d);
             } catch (e) { grid.innerHTML = '<div class="empty">ɢᴀɢᴀʟ ᴍᴇᴍᴜᴀᴛ ᴅᴀᴛᴀ</div>'; }
@@ -110,7 +94,6 @@
             const grid = document.getElementById('grid');
             grid.innerHTML = '<div class="loading">ᴍᴇɴᴄᴀʀɪ...</div>';
             try {
-                await apiBaseReady;
                 const r = await fetch(API_BASE + '/api/anime/search?q=' + encodeURIComponent(q)); const d = await r.json();
                 renderGrid(d);
             } catch (e) { grid.innerHTML = '<div class="empty">ɢᴀɢᴀʟ ᴍᴇɴᴄᴀʀɪ</div>'; }
@@ -150,8 +133,8 @@
                         <div class="stat"><div class="val">${a.status ? a.status.split(' ')[0] : '-'}</div><div class="lbl">sᴛᴀᴛᴜs</div></div>
                     </div>
                     <div class="synopsis">${escapeHtml((a.synopsis || 'Sinopsis tidak tersedia.').slice(0, 400))}${a.synopsis && a.synopsis.length > 400 ? '...' : ''}</div>
-                    <a class="legal-btn" href="${a.url}" target="_blank">info lengkap ᴅɪ myanimelist</a>
-                    <a class="legal-btn" style="background:#00a8e1" href="https://www.crunchyroll.com/search?q=${encodeURIComponent(a.title)}" target="_blank">cari ᴅɪ crunchyroll</a>
+                    <a class="legal-btn" href="${a.url}" target="_blank">ɪɴғᴏ ʟᴇɴɢᴋᴀᴘ ᴅɪ ᴍʏᴀɴɪᴍᴇʟɪsᴛ</a>
+                    <a class="legal-btn" style="background:#00a8e1" href="https://www.crunchyroll.com/search?q=${encodeURIComponent(a.title)}" target="_blank">ᴄᴀʀɪ ᴅɪ ᴄʀᴜɴᴄʜʏʀᴏʟʟ</a>
                 </div>
             `;
             document.getElementById('detailOverlay').classList.add('active');
