@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aeternum Voxaa</title>
+    <title>ᴀᴇᴛᴇʀɴᴜᴍ ᴠᴏxᴀᴀ</title>
     <style>
-        @font-face { font-family: 'TeutonNormal'; src: url('/TeutonNormal.otf') format('opentype'); font-display: swap; }
         :root { --biru: #0F52BA; --bg: #f0f4f8; --putih: #fff; --abu: #999; --info-color: #b3d9ff; }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'TeutonNormal', sans-serif; }
-        body { background: var(--bg); padding-top: 270px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); font-family: sans-serif; padding-top: 270px; }
         .foto-atas { position: fixed; top: 0; left: 0; width: 100%; height: 250px; z-index: 999; }
         .foto-atas img { width: 100%; height: 100%; object-fit: cover; }
         .title { position: fixed; top: 12px; left: 16px; z-index: 1001; font: bold 16px monospace; text-shadow: 2px 2px 0 rgba(0,0,0,0.6); }
@@ -92,8 +91,8 @@
     </div>
     <div class="user-info" id="userInfo">
         Name <span id="userName">-</span><br>
-        ɪᴅ <span id="userId">-</span><br>
-        ʀᴏʟᴇ <span id="userRole">-</span>
+        ID <span id="userId">-</span><br>
+        Role <span id="userRole">-</span>
     </div>
     <div class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></div>
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
@@ -113,7 +112,7 @@
     <div class="garis"></div>
     <div class="info">
         ʙʀᴏᴡsᴇʀ <span id="ib">...</span> &nbsp; ʙᴀᴛʀᴇ <span id="ibat">...</span><br>
-        device <span id="id">...</span> &nbsp; status <span id="is">...</span>
+        ᴅᴇᴠɪᴄᴇ <span id="id">...</span> &nbsp; sᴛᴀᴛᴜs <span id="is">...</span>
     </div>
 
     <div class="kategori-container">
@@ -155,23 +154,12 @@
 
     <script>
         const API_KEY = '36dbdd68-517d-4e6c-9770-03f0e765017f';
-        const TUNNEL_URL_SOURCE = 'https://raw.githubusercontent.com/Laxxye1/Aeternum-Voxaa/main/tunnel-url.txt';
         let API_BASE = localStorage.getItem('aeternum_api_base') || '';
         let maintenanceStatus = { tiktok: false, instagram: false, youtube: false, mp3: false };
         let currentUser = null;
         let cp = '';
         let isLoginMode = false;
         let kategori = { populer: ["tiktok"], terbaru: ["youtube", "massage", "removebg"], lain: ["instagram", "mp3"] };
-
-        async function initApiBase() {
-            try {
-                const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
-                if (r.ok) {
-                    const text = (await r.text()).trim();
-                    if (text.startsWith('https://')) API_BASE = text;
-                }
-            } catch (e) {}
-        }
 
         async function loadKategori() {
             try { const r = await fetch(API_BASE + '/api/kategori'); kategori = await r.json(); } catch(e) {}
@@ -241,11 +229,9 @@
         const savedUser = localStorage.getItem('aeternum_user');
         if (savedUser) { currentUser = JSON.parse(savedUser); hideAuthPopup(); updateUIForUser(); }
         else { showAuthPopup(false); }
-        const apiBaseReady = initApiBase();
-        apiBaseReady.then(loadKategori);
-        apiBaseReady.then(() => { setInterval(loadStatus, 8000); loadStatus(); });
+        loadKategori();
 
-        function toSC(t) { const m={'a':'a','b':'b','c':'c','d':'d','e':'e','f':'f','g':'g','h':'h','i':'i','j':'j','k':'k','l':'l','m':'m','n':'n','o':'o','p':'p','q':'q','r':'r','s':'s','t':'t','u':'u','v':'v','w':'w','x':'x','y':'y','z':'z','0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','%':'%',' ': ' '};return t.toLowerCase().split('').map(c=>m[c]||c).join('');}
+        function toSC(t) { const m={'a':'ᴀ','b':'ʙ','c':'ᴄ','d':'ᴅ','e':'ᴇ','f':'ғ','g':'ɢ','h':'ʜ','i':'ɪ','j':'ᴊ','k':'ᴋ','l':'ʟ','m':'ᴍ','n':'ɴ','o':'ᴏ','p':'ᴘ','q':'ǫ','r':'ʀ','s':'s','t':'ᴛ','u':'ᴜ','v':'ᴠ','w':'ᴡ','x':'x','y':'ʏ','z':'ᴢ','0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','%':'%',' ': ' '};return t.toLowerCase().split('').map(c=>m[c]||c).join('');}
 
         function showAuthPopup(login) {
             isLoginMode = login;
@@ -263,23 +249,12 @@
             const name = document.getElementById('authName').value.trim();
             const pass = document.getElementById('authPass').value.trim();
             const msg = document.getElementById('authMsg');
-            if (!name || !pass) { msg.className = 'msg error'; msg.textContent = toSC('nama dan password wajib diisi'); return; }
-            const btn = document.getElementById('authBtn');
-            const originalText = btn.textContent;
-            btn.disabled = true; btn.textContent = toSC('memproses...');
-            try {
-                await apiBaseReady;
-                if (!API_BASE) { msg.className = 'msg error'; msg.textContent = toSC('server tidak terhubung, coba lagi'); return; }
-                const endpoint = isLoginMode ? API_BASE + '/api/login' : API_BASE + '/api/register';
-                const r = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, password: pass }) });
-                const d = await r.json();
-                if (d.success) { currentUser = d.user; localStorage.setItem('aeternum_user', JSON.stringify(d.user)); hideAuthPopup(); updateUIForUser(); }
-                else { msg.className = 'msg error'; msg.textContent = toSC(d.message || 'gagal, coba lagi'); }
-            } catch (e) {
-                msg.className = 'msg error'; msg.textContent = toSC('gagal terhubung ke server');
-            } finally {
-                btn.disabled = false; btn.textContent = originalText;
-            }
+            if (!name || !pass) return;
+            const endpoint = isLoginMode ? API_BASE + '/api/login' : API_BASE + '/api/register';
+            const r = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, password: pass }) });
+            const d = await r.json();
+            if (d.success) { currentUser = d.user; localStorage.setItem('aeternum_user', JSON.stringify(d.user)); hideAuthPopup(); updateUIForUser(); }
+            else { msg.className = 'msg error'; msg.textContent = toSC(d.message); }
         }
 
         function logout() {
@@ -292,6 +267,7 @@
         }
 
         async function loadStatus() { try { const r = await fetch(API_BASE + '/api/status'); maintenanceStatus = await r.json(); renderKategori(); updateUI(); } catch(e){} }
+        setInterval(loadStatus, 8000); loadStatus();
 
         async function saveStatus(p) {
             await fetch(API_BASE + '/api/status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ platform: p, apiKey: API_KEY }) });
@@ -299,14 +275,14 @@
 
         function updateUI() {
             const sl = document.getElementById('statusList');
-            const platformLabels = { tiktok: 'tiktok', instagram: 'instagram', youtube: 'youtube', mp3: 'mp3', massage: 'massage', removebg: 'removebackground', anime: 'anime', ai: 'ai' };
-            if(sl) sl.innerHTML = Object.keys(platformLabels).map(p => `<div class="status-item ${maintenanceStatus[p]?'maintenance':'active'}"><span>${platformLabels[p]}</span><span>${maintenanceStatus[p]?'maintenance':'active'}</span></div>`).join('');
+            const platformLabels = { tiktok: 'ᴛɪᴋᴛᴏᴋ', instagram: 'ɪɴsᴛᴀɢʀᴀᴍ', youtube: 'ʏᴏᴜᴛᴜʙᴇ', mp3: 'ᴍᴘ3', massage: 'ᴍᴀssᴀɢᴇ', removebg: 'ʀᴇᴍᴏᴠᴇʙᴀᴄᴋɢʀᴏᴜɴᴅ', anime: 'ᴀɴɪᴍᴇ', ai: 'ᴀɪ' };
+            if(sl) sl.innerHTML = Object.keys(platformLabels).map(p => `<div class="status-item ${maintenanceStatus[p]?'maintenance':'active'}"><span>${platformLabels[p]}</span><span>${maintenanceStatus[p]?'ᴍᴀɪɴᴛᴇɴᴀɴᴄᴇ':'ᴀᴄᴛɪᴠᴇ'}</span></div>`).join('');
         }
 
         function updateUIForUser() {
             const roleText = currentUser.role === 'owner' ? 'ᴅᴇᴠᴇʟᴏᴘᴇʀ' : 'ᴍᴇᴍʙᴇʀ ғʀᴇᴇ';
             document.getElementById('userInfo').style.display = 'block';
-            document.getElementById('userInfo').innerHTML = 'ɴᴀᴍᴇ <span style="color:#b3d9ff">' + currentUser.name + '</span><br>ɪᴅ <span style="color:#b3d9ff">' + currentUser.id + '</span><br>ʀᴏʟᴇ <span style="color:#ffffff">' + roleText + '</span>';
+            document.getElementById('userInfo').innerHTML = 'Name <span style="color:#b3d9ff">' + currentUser.name + '</span><br>ɪᴅ <span style="color:#b3d9ff">' + currentUser.id + '</span><br>ʀᴏʟᴇ <span style="color:#ffffff">' + roleText + '</span>';
             const h = document.getElementById('hamburgerBtn');
             h.style.display = 'flex'; h.onclick = toggleSidebar;
             document.getElementById('ownerPanel').style.display = currentUser.role === 'owner' ? 'block' : 'none';
@@ -394,7 +370,7 @@
                     <label class="file-label" for="fileInput">ᴘɪʟɪʜ ɢᴀᴍʙᴀʀ</label>
                     <input type="file" id="fileInput" accept="image/*" onchange="removeBgFromFile(event)">
                     <div class="spinner" id="spinner"></div>
-                    <div id="ʜᴀsɪʟ"></div>
+                    <div id="hasil"></div>
                 `;
                 document.getElementById('downloadPopup').classList.add('active'); return;
             }
@@ -405,7 +381,7 @@
             }
             cp = p;
             document.getElementById('popupLogo').innerHTML = logos[p];
-            document.getElementById('popupContent').innerHTML = `<input type="text" id="linkInput" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ʟɪɴᴋ..."><button onclick="download()">ᴅᴏᴡɴʟᴏᴀᴅ</button><div class="spinner" id="spinner"></div><div id="ʜᴀsɪʟ"></div>`;
+            document.getElementById('popupContent').innerHTML = `<input type="text" id="linkInput" placeholder="ᴍᴀsᴜᴋᴋᴀɴ ʟɪɴᴋ..."><button onclick="download()">ᴅᴏᴡɴʟᴏᴀᴅ</button><div class="spinner" id="spinner"></div><div id="hasil"></div>`;
             document.getElementById('downloadPopup').classList.add('active');
             setTimeout(() => { const inp = document.getElementById('linkInput'); if(inp) inp.focus(); }, 300);
         }
@@ -421,9 +397,9 @@
                 let api=cp==='tiktok'?API_BASE+'/api/tiktok?url=':cp==='instagram'?API_BASE+'/api/instagram?url=':cp==='youtube'?API_BASE+'/api/youtube?type=video&url=':API_BASE+'/api/mp3?url=';
                 const r=await fetch(api+encodeURIComponent(link));const d=await r.json();
                 if(d.error){hasil.innerHTML=`<p style="color:#888;padding:20px">ᴍᴇᴅɪᴀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ<br><span style="font-size:12px;opacity:.7">${d.error}</span></p>`;}
-                else if(cp==='tiktok'&&d.code===0&&d.data){const base=(d.filename||'TikTok_1.mp4').replace(/\.[^.]+$/,'');if(d.data.images)d.data.images.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">ᴘɪᴄᴛᴜʀᴇ ${i+1}</div><img src="${u}"><button class="download-btn" onclick="fd('${u}','${base}_${i+1}.jpg')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`);else{const u=d.data.hdplay||d.data.play;hasil.innerHTML=`<div class="hasil-item"><div class="label">ᴠɪᴅᴇᴏ 1</div><video src="${u}" controls></video><button class="download-btn" onclick="fd('${u}','${d.filename||'TikTok_1.mp4'}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`;}}
-                else if(cp==='instagram'&&d.url){const base=(d.filename||'Instagram_1.mp4').replace(/\.[^.]+$/,'');d.url.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">${u.type==='video'?'ᴠɪᴅᴇᴏ':'ᴘɪᴄᴛᴜʀᴇ'} ${i+1}</div>${u.type==='video'?`<video src="${u.url}" controls></video>`:`<img src="${u.url}">`}<button class="download-btn" onclick="fd('${u.url}','${base}_${i+1}.${u.type==='video'?'mp4':'jpg'}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`);}
-                else if(d.success&&d.url){const ext=d.type==='audio'?'mp3':'mp4';const fn=d.filename||(('download')+'.'+ext);hasil.innerHTML=`<div class="hasil-item"><div class="label">${d.type==='audio'?'ᴀᴜᴅɪᴏ':'ᴠɪᴅᴇᴏ'} 1</div>${d.type==='audio'?`<audio src="${d.url}" controls></audio>`:`<video src="${d.url}" controls></video>`}<button class="download-btn" onclick="fd('${d.url}','${fn}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`;}
+                else if(cp==='tiktok'&&d.code===0&&d.data){const base=(d.filename||'TikTok_1.mp4').replace(/\.[^.]+$/,'');if(d.data.images)d.data.images.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">Picture ${i+1}</div><img src="${u}"><button class="download-btn" onclick="fd('${u}','${base}_${i+1}.jpg')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`);else{const u=d.data.hdplay||d.data.play;hasil.innerHTML=`<div class="hasil-item"><div class="label">Video 1</div><video src="${u}" controls></video><button class="download-btn" onclick="fd('${u}','${d.filename||'TikTok_1.mp4'}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`;}}
+                else if(cp==='instagram'&&d.url){const base=(d.filename||'Instagram_1.mp4').replace(/\.[^.]+$/,'');d.url.forEach((u,i)=>hasil.innerHTML+=`<div class="hasil-item"><div class="label">${u.type==='video'?'Video':'Picture'} ${i+1}</div>${u.type==='video'?`<video src="${u.url}" controls></video>`:`<img src="${u.url}">`}<button class="download-btn" onclick="fd('${u.url}','${base}_${i+1}.${u.type==='video'?'mp4':'jpg'}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`);}
+                else if(d.success&&d.url){const ext=d.type==='audio'?'mp3':'mp4';const fn=d.filename||(('download')+'.'+ext);hasil.innerHTML=`<div class="hasil-item"><div class="label">${d.type==='audio'?'Audio':'Video'} 1</div>${d.type==='audio'?`<audio src="${d.url}" controls></audio>`:`<video src="${d.url}" controls></video>`}<button class="download-btn" onclick="fd('${d.url}','${fn}')">ᴅᴏᴡɴʟᴏᴀᴅ</button></div>`;}
                 else{hasil.innerHTML='<p style="color:#888;padding:20px">ᴍᴇᴅɪᴀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ</p>';}
             }catch(e){hasil.innerHTML='<p style="color:#888;padding:20px">ᴍᴇᴅɪᴀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ</p>';}
             btn.disabled=false;spin.style.display='none';
