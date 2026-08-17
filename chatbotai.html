@@ -133,7 +133,18 @@
     </div>
 
     <script>
-        let API_BASE = localStorage.getItem('aeternum_api_base') || '';
+        const TUNNEL_URL_SOURCE = 'https://raw.githubusercontent.com/Laxxye1/Aeternum-Voxaa/main/tunnel-url.txt';
+        let API_BASE = '';
+        async function initApiBase() {
+            try {
+                const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
+                if (r.ok) {
+                    const text = (await r.text()).trim();
+                    if (text.startsWith('https://')) API_BASE = text;
+                }
+            } catch (e) {}
+        }
+        const apiBaseReady = initApiBase();
         let history = [];
         let pendingImage = null;
 
@@ -309,6 +320,8 @@
         async function requestAI() {
             showTyping();
             try {
+                await apiBaseReady;
+                if (!API_BASE) { hideTyping(); appendMessage('ai error', 'sᴇʀᴠᴇʀ ᴛɪᴅᴀᴋ ᴛᴇʀʜᴜʙᴜɴɢ'); return; }
                 const r = await fetch(API_BASE + '/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
