@@ -129,7 +129,18 @@
     </div>
 
     <script>
-        let API_BASE = localStorage.getItem('aeternum_api_base') || '';
+        const TUNNEL_URL_SOURCE = 'https://raw.githubusercontent.com/Laxxye1/Aeternum-Voxaa/main/tunnel-url.txt';
+        let API_BASE = '';
+        async function initApiBase() {
+            try {
+                const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
+                if (r.ok) {
+                    const text = (await r.text()).trim();
+                    if (text.startsWith('https://')) API_BASE = text;
+                }
+            } catch (e) {}
+        }
+        const apiBaseReady = initApiBase();
         let currentUser = null;
         let chatPartner = null;
         let roomId = '';
@@ -170,6 +181,7 @@
         async function confirmDelete() {
             if (!pendingDeleteRoomId) return;
             try {
+                await apiBaseReady;
                 await fetch(API_BASE + '/api/chat/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ roomId: pendingDeleteRoomId }) });
                 if (roomId === pendingDeleteRoomId) { chatPartner = null; roomId = ''; document.getElementById('chatContainer').innerHTML = '<div class="empty">sᴇᴀʀᴄʜ ʙʏ ɪᴅ ᴛᴏ sᴛᴀʀᴛ ᴄʜᴀᴛ</div>'; }
                 closeDeletePopup(); loadChatHistory();
@@ -202,29 +214,39 @@
 
         async function searchUser() {
             const id = document.getElementById('searchInput').value.trim(); if (!id) return;
-            const r = await fetch(API_BASE + '/api/user/' + id); const d = await r.json();
             const result = document.getElementById('searchResult');
-            if (d.success) {
-                chatPartner = d.user; result.className = 'search-result found';
-                result.textContent = 'Name ' + d.user.name + ' | ID ' + d.user.id;
-                roomId = [currentUser.id, chatPartner.id].sort().join('_'); lastMessageCount = 0; loadChat();
-            } else { result.className = 'search-result notfound'; result.textContent = 'User tidak ditemukan'; }
+            try {
+                await apiBaseReady;
+                if (!API_BASE) { result.className = 'search-result notfound'; result.textContent = 'sᴇʀᴠᴇʀ ᴛɪᴅᴀᴋ ᴛᴇʀʜᴜʙᴜɴɢ'; return; }
+                const r = await fetch(API_BASE + '/api/user/' + id); const d = await r.json();
+                if (d.success) {
+                    chatPartner = d.user; result.className = 'search-result found';
+                    result.textContent = 'ɴᴀᴍᴇ' + ' ' + d.user.name + ' | ' + 'ɪᴅ' + ' ' + d.user.id;
+                    roomId = [currentUser.id, chatPartner.id].sort().join('_'); lastMessageCount = 0; loadChat();
+                } else { result.className = 'search-result notfound'; result.textContent = 'ᴜsᴇʀ ᴛɪᴅᴀᴋ ᴅɪᴛᴇᴍᴜᴋᴀɴ'; }
+            } catch (e) {
+                result.className = 'search-result notfound'; result.textContent = 'ɢᴀɢᴀʟ ᴛᴇʀʜᴜʙᴜɴɢ ᴋᴇ sᴇʀᴠᴇʀ';
+            }
         }
 
         async function loadChat() {
-            const r = await fetch(API_BASE + '/api/chat/' + roomId); const d = await r.json();
-            const container = document.getElementById('chatContainer');
-            const messages = d.messages || [];
-            if (messages.length === 0) { container.innerHTML = '<div class="empty">ɴᴇᴡ ᴄʜᴀᴛ</div>'; return; }
-            container.innerHTML = messages.map(m => {
-                const isMe = m.senderId === currentUser.id;
-                return `<div class="chat-bubble ${isMe?'me':'other'}">
-                    <div class="sender">${m.senderName}</div>${m.text}
-                    <div class="time">${m.time}</div>
-                </div>`;
-            }).join('');
-            container.scrollTop = container.scrollHeight;
-            lastMessageCount = messages.length;
+            try {
+                await apiBaseReady;
+                if (!API_BASE) return;
+                const r = await fetch(API_BASE + '/api/chat/' + roomId); const d = await r.json();
+                const container = document.getElementById('chatContainer');
+                const messages = d.messages || [];
+                if (messages.length === 0) { container.innerHTML = '<div class="empty">' + 'ɴᴇᴡ ᴄʜᴀᴛ' + '</div>'; return; }
+                container.innerHTML = messages.map(m => {
+                    const isMe = m.senderId === currentUser.id;
+                    return `<div class="chat-bubble ${isMe?'me':'other'}">
+                        <div class="sender">${m.senderName}</div>${m.text}
+                        <div class="time">${m.time}</div>
+                    </div>`;
+                }).join('');
+                container.scrollTop = container.scrollHeight;
+                lastMessageCount = messages.length;
+            } catch (e) {}
         }
 
         async function checkNewMessages() {
@@ -246,11 +268,14 @@
         async function sendMessage() {
             const text = document.getElementById('chatInput').value.trim(); if (!text || !chatPartner) return;
             const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            await fetch(API_BASE + '/api/chat', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ roomId, senderId: currentUser.id, senderName: currentUser.name, text, time })
-            });
-            document.getElementById('chatInput').value = ''; loadChat();
+            try {
+                await apiBaseReady;
+                await fetch(API_BASE + '/api/chat', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ roomId, senderId: currentUser.id, senderName: currentUser.name, text, time })
+                });
+                document.getElementById('chatInput').value = ''; loadChat();
+            } catch (e) {}
         }
 
         setInterval(() => { if (roomId) checkNewMessages(); }, 5000);
