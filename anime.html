@@ -68,12 +68,24 @@
     </div>
 
     <script>
-        let API_BASE = localStorage.getItem('aeternum_api_base') || '';
+        const TUNNEL_URL_SOURCE = 'https://raw.githubusercontent.com/Laxxye1/Aeternum-Voxaa/main/tunnel-url.txt';
+        let API_BASE = '';
+        async function initApiBase() {
+            try {
+                const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
+                if (r.ok) {
+                    const text = (await r.text()).trim();
+                    if (text.startsWith('https://')) API_BASE = text;
+                }
+            } catch (e) {}
+        }
+        const apiBaseReady = initApiBase();
         async function loadTop() {
             setActiveTab('tabTop');
             const grid = document.getElementById('grid');
             grid.innerHTML = '<div class="loading">ᴍᴇᴍᴜᴀᴛ...</div>';
             try {
+                await apiBaseReady;
                 const r = await fetch(API_BASE + '/api/anime/top'); const d = await r.json();
                 renderGrid(d);
             } catch (e) { grid.innerHTML = '<div class="empty">ɢᴀɢᴀʟ ᴍᴇᴍᴜᴀᴛ ᴅᴀᴛᴀ</div>'; }
@@ -83,6 +95,7 @@
             const grid = document.getElementById('grid');
             grid.innerHTML = '<div class="loading">ᴍᴇᴍᴜᴀᴛ...</div>';
             try {
+                await apiBaseReady;
                 const r = await fetch(API_BASE + '/api/anime/seasonal'); const d = await r.json();
                 renderGrid(d);
             } catch (e) { grid.innerHTML = '<div class="empty">ɢᴀɢᴀʟ ᴍᴇᴍᴜᴀᴛ ᴅᴀᴛᴀ</div>'; }
@@ -94,6 +107,7 @@
             const grid = document.getElementById('grid');
             grid.innerHTML = '<div class="loading">ᴍᴇɴᴄᴀʀɪ...</div>';
             try {
+                await apiBaseReady;
                 const r = await fetch(API_BASE + '/api/anime/search?q=' + encodeURIComponent(q)); const d = await r.json();
                 renderGrid(d);
             } catch (e) { grid.innerHTML = '<div class="empty">ɢᴀɢᴀʟ ᴍᴇɴᴄᴀʀɪ</div>'; }
