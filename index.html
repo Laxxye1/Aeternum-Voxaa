@@ -154,7 +154,18 @@
 
     <script>
         const API_KEY = '36dbdd68-517d-4e6c-9770-03f0e765017f';
-        let API_BASE = localStorage.getItem('aeternum_api_base') || '';
+        const TUNNEL_URL_SOURCE = 'https://raw.githubusercontent.com/Laxxye1/Aeternum-Voxaa/main/tunnel-url.txt';
+        let API_BASE = '';
+        async function initApiBase() {
+            try {
+                const r = await fetch(TUNNEL_URL_SOURCE + '?t=' + Date.now());
+                if (r.ok) {
+                    const text = (await r.text()).trim();
+                    if (text.startsWith('https://')) API_BASE = text;
+                }
+            } catch (e) {}
+        }
+        const apiBaseReady = initApiBase();
         let maintenanceStatus = { tiktok: false, instagram: false, youtube: false, mp3: false };
         let currentUser = null;
         let cp = '';
@@ -229,7 +240,7 @@
         const savedUser = localStorage.getItem('aeternum_user');
         if (savedUser) { currentUser = JSON.parse(savedUser); hideAuthPopup(); updateUIForUser(); }
         else { showAuthPopup(false); }
-        loadKategori();
+        apiBaseReady.then(loadKategori);
 
         function toSC(t) { const m={'a':'ᴀ','b':'ʙ','c':'ᴄ','d':'ᴅ','e':'ᴇ','f':'ғ','g':'ɢ','h':'ʜ','i':'ɪ','j':'ᴊ','k':'ᴋ','l':'ʟ','m':'ᴍ','n':'ɴ','o':'ᴏ','p':'ᴘ','q':'ǫ','r':'ʀ','s':'s','t':'ᴛ','u':'ᴜ','v':'ᴠ','w':'ᴡ','x':'x','y':'ʏ','z':'ᴢ','0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9','%':'%',' ': ' '};return t.toLowerCase().split('').map(c=>m[c]||c).join('');}
 
@@ -250,11 +261,17 @@
             const pass = document.getElementById('authPass').value.trim();
             const msg = document.getElementById('authMsg');
             if (!name || !pass) return;
-            const endpoint = isLoginMode ? API_BASE + '/api/login' : API_BASE + '/api/register';
-            const r = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, password: pass }) });
-            const d = await r.json();
-            if (d.success) { currentUser = d.user; localStorage.setItem('aeternum_user', JSON.stringify(d.user)); hideAuthPopup(); updateUIForUser(); }
-            else { msg.className = 'msg error'; msg.textContent = toSC(d.message); }
+            try {
+                await apiBaseReady;
+                if (!API_BASE) { msg.className = 'msg error'; msg.textContent = toSC('server tidak terhubung, coba lagi'); return; }
+                const endpoint = isLoginMode ? API_BASE + '/api/login' : API_BASE + '/api/register';
+                const r = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, password: pass }) });
+                const d = await r.json();
+                if (d.success) { currentUser = d.user; localStorage.setItem('aeternum_user', JSON.stringify(d.user)); hideAuthPopup(); updateUIForUser(); }
+                else { msg.className = 'msg error'; msg.textContent = toSC(d.message); }
+            } catch (e) {
+                msg.className = 'msg error'; msg.textContent = toSC('gagal terhubung ke server');
+            }
         }
 
         function logout() {
@@ -267,7 +284,7 @@
         }
 
         async function loadStatus() { try { const r = await fetch(API_BASE + '/api/status'); maintenanceStatus = await r.json(); renderKategori(); updateUI(); } catch(e){} }
-        setInterval(loadStatus, 8000); loadStatus();
+        apiBaseReady.then(() => { setInterval(loadStatus, 8000); loadStatus(); });
 
         async function saveStatus(p) {
             await fetch(API_BASE + '/api/status', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ platform: p, apiKey: API_KEY }) });
